@@ -1,0 +1,3023 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMR Tech Finder | Descubre tu camino en la informática</title>
+  <style>
+    /* ==========================================================================
+       1. VARIABLES GLOBALES Y TEMA ARCADE NEÓN / GLASSMORPHISM
+       ========================================================================== */
+    :root {
+      --bg-deep: #070b14;
+      --bg-surface: #0d1424;
+      --bg-card: rgba(16, 25, 46, 0.78);
+      --bg-card-hover: rgba(22, 34, 62, 0.92);
+      --border-subtle: rgba(94, 234, 212, 0.18);
+      --border-strong: rgba(56, 189, 248, 0.45);
+
+      --neon-cyan: #00f0ff;
+      --neon-purple: #a855f7;
+      --neon-green: #10b981;
+      --neon-amber: #f59e0b;
+      --neon-pink: #ec4899;
+      --neon-red: #ef4444;
+
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --shadow-glow: 0 0 28px rgba(0, 240, 255, 0.14);
+      --font-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-deep);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(0, 240, 255, 0.09) 0%, transparent 38%),
+        radial-gradient(circle at 88% 22%, rgba(168, 85, 247, 0.11) 0%, transparent 40%),
+        radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.07) 0%, transparent 45%),
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 44px 44px, 44px 44px;
+      background-attachment: fixed;
+    }
+
+    /* ==========================================================================
+       2. BARRA DE NAVEGACIÓN FIJA Y PROGRESO ARCADE
+       ========================================================================== */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(7, 11, 20, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.75rem 1.5rem;
+    }
+
+    .nav-container {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      font-size: 1.05rem;
+    }
+
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      color: #04070e;
+      font-family: var(--font-mono);
+      font-weight: 900;
+      font-size: 0.9rem;
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.45);
+    }
+
+    .progress-strip {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      flex-wrap: wrap;
+    }
+
+    .led-step {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border: 1px solid transparent;
+      background: transparent;
+      font-family: var(--font-sans);
+    }
+
+    .led-step:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .led-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #334155;
+      transition: all 0.3s ease;
+    }
+
+    .led-step.active {
+      color: var(--neon-cyan);
+      border-color: rgba(0, 240, 255, 0.4);
+      background: rgba(0, 240, 255, 0.09);
+    }
+
+    .led-step.active .led-dot {
+      background: var(--neon-cyan);
+      box-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    .led-step.done {
+      color: var(--neon-green);
+    }
+
+    .led-step.done .led-dot {
+      background: var(--neon-green);
+      box-shadow: 0 0 10px var(--neon-green);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.86rem;
+      font-weight: 600;
+      padding: 0.4rem 0.7rem;
+      border-radius: 8px;
+      transition: 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.08);
+    }
+
+    .sound-btn {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.42rem 0.75rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s;
+    }
+
+    .sound-btn:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+    }
+
+    /* ==========================================================================
+       3. CONTENEDORES, BOTONES Y COMPONENTES REUTILIZABLES
+       ========================================================================== */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 5rem;
+    }
+
+    section {
+      margin-bottom: 4.5rem;
+      scroll-margin-top: 86px;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 780px;
+      margin: 0 auto 2.4rem;
+    }
+
+    .pill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.32rem 0.85rem;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      color: var(--neon-cyan);
+      margin-bottom: 0.9rem;
+    }
+
+    h1, h2, h3, h4 {
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .section-header h2 {
+      font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+      margin-bottom: 0.7rem;
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.65rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.82rem 1.55rem;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+      transition: all 0.22s ease;
+      font-family: var(--font-sans);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--neon-cyan), #3b82f6);
+      color: #030712;
+      box-shadow: 0 0 24px rgba(0, 240, 255, 0.32);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 34px rgba(0, 240, 255, 0.55);
+    }
+
+    .btn-purple {
+      background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+      color: #fff;
+      box-shadow: 0 0 22px rgba(168, 85, 247, 0.32);
+    }
+
+    .btn-purple:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 32px rgba(168, 85, 247, 0.55);
+    }
+
+    .btn-outline {
+      background: rgba(15, 23, 42, 0.65);
+      color: var(--text-main);
+      border: 1px solid rgba(148, 163, 184, 0.32);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.08);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #03150e;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ==========================================================================
+       4. HERO SECTION & PROFESORES TUTORES
+       ========================================================================== */
+    .hero {
+      text-align: center;
+      padding: 2.8rem 1rem 1.5rem;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 900;
+      margin-bottom: 1rem;
+      background: linear-gradient(95deg, #ffffff 10%, var(--neon-cyan) 50%, var(--neon-purple) 95%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      max-width: 740px;
+      margin: 0 auto 2rem;
+      font-size: 1.12rem;
+      color: var(--text-muted);
+    }
+
+    .hero-cta-group {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 1rem;
+      max-width: 820px;
+      margin: 0 auto 3.5rem;
+    }
+
+    .stat-box {
+      background: rgba(13, 20, 36, 0.72);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+    }
+
+    .stat-box strong {
+      display: block;
+      font-size: 1.5rem;
+      font-family: var(--font-mono);
+      color: var(--neon-cyan);
+    }
+
+    .stat-box span {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+    }
+
+    .teachers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+      gap: 1.35rem;
+    }
+
+    .teacher-card {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: left;
+    }
+
+    .teacher-card::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 3px;
+      background: var(--accent, var(--neon-cyan));
+    }
+
+    .teacher-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--accent, var(--neon-cyan));
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45), 0 0 24px rgba(0, 240, 255, 0.14);
+    }
+
+    .teacher-top {
+      display: flex;
+      align-items: center;
+      gap: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .teacher-avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--accent, var(--neon-cyan));
+      flex-shrink: 0;
+    }
+
+    .teacher-module {
+      display: inline-block;
+      font-size: 0.73rem;
+      font-family: var(--font-mono);
+      color: var(--accent, var(--neon-cyan));
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      margin-bottom: 0.2rem;
+    }
+
+    .teacher-card h3 {
+      font-size: 1.15rem;
+    }
+
+    .teacher-card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .teacher-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .score-chip {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      color: var(--text-muted);
+    }
+
+    .score-chip.completed {
+      border-color: var(--neon-green);
+      color: var(--neon-green);
+      background: rgba(16, 185, 129, 0.12);
+    }
+
+    /* ==========================================================================
+       5. EVALUACIÓN PERSONAL PREVIA (5 PREGUNTAS)
+       ========================================================================== */
+    .quiz-shell {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 10px;
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      margin-bottom: 1.4rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 20%;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }
+
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      color: var(--neon-cyan);
+    }
+
+    .quiz-question-title {
+      font-size: 1.38rem;
+      margin-bottom: 1.35rem;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .option-card {
+      text-align: left;
+      padding: 1.05rem 1.15rem;
+      border-radius: var(--radius-md);
+      background: rgba(15, 23, 42, 0.78);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: var(--font-sans);
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .option-card:hover {
+      border-color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .option-card.selected {
+      border-color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.16);
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.22);
+    }
+
+    .option-card strong {
+      font-size: 0.98rem;
+    }
+
+    .option-card small {
+      color: var(--text-muted);
+      font-size: 0.83rem;
+    }
+
+    .summary-banner {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(168, 85, 247, 0.14));
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      border-radius: var(--radius-md);
+      padding: 1.4rem;
+    }
+
+    /* ==========================================================================
+       6. ARENA DE LOS 4 MINIJUEGOS INTERACTIVOS
+       ========================================================================== */
+    .game-tabs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.8rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .game-tab {
+      background: rgba(13, 20, 36, 0.82);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: var(--radius-md);
+      padding: 0.9rem 1rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.22s ease;
+      font-family: var(--font-sans);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+    }
+
+    .game-tab:hover {
+      border-color: var(--neon-cyan);
+      color: var(--text-main);
+    }
+
+    .game-tab.active {
+      border-color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.12);
+      color: var(--text-main);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.18);
+    }
+
+    .game-tab.completed {
+      border-color: rgba(16, 185, 129, 0.55);
+    }
+
+    .game-panel {
+      display: none;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .game-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tutor-banner {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.2rem;
+      border-radius: var(--radius-md);
+      background: rgba(10, 17, 32, 0.85);
+      border-left: 4px solid var(--accent, var(--neon-cyan));
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tutor-banner p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    /* --- MINIJUEGO 1: HARDWARE BUILDER --- */
+    .hw-layout {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .hw-category {
+      margin-bottom: 1.15rem;
+    }
+
+    .hw-category-title {
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .hw-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+      gap: 0.65rem;
+    }
+
+    .hw-item {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 12px;
+      padding: 0.75rem 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+    }
+
+    .hw-item:hover {
+      border-color: var(--neon-cyan);
+    }
+
+    .hw-item.selected {
+      border-color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.14);
+      box-shadow: 0 0 14px rgba(0, 240, 255, 0.2);
+    }
+
+    .hw-item .price {
+      font-family: var(--font-mono);
+      color: var(--neon-amber);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .hw-item .spec {
+      display: block;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .hw-summary {
+      background: rgba(9, 15, 28, 0.92);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      position: sticky;
+      top: 90px;
+    }
+
+    .budget-meter {
+      font-family: var(--font-mono);
+      font-size: 1.45rem;
+      font-weight: 800;
+      margin: 0.5rem 0;
+    }
+
+    .check-list {
+      list-style: none;
+      margin: 1rem 0 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 0.88rem;
+    }
+
+    .check-list li {
+      padding: 0.45rem 0.65rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .ok { color: var(--neon-green); }
+    .warn { color: var(--neon-amber); }
+    .err { color: var(--neon-red); }
+
+    /* --- MINIJUEGO 2: REDES LOCALES --- */
+    .sub-stage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .stage-box {
+      background: rgba(10, 17, 32, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: var(--radius-md);
+      padding: 1.2rem;
+    }
+
+    .stage-box h4 {
+      color: var(--neon-purple);
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .form-row {
+      margin-bottom: 0.8rem;
+    }
+
+    .form-row label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+      font-family: var(--font-mono);
+    }
+
+    .cyber-input, .cyber-select {
+      width: 100%;
+      padding: 0.62rem 0.8rem;
+      border-radius: 10px;
+      background: #060b16;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+    }
+
+    .cyber-input:focus, .cyber-select:focus {
+      outline: none;
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+    }
+
+    .port-row {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 0.6rem;
+      align-items: center;
+      margin-bottom: 0.55rem;
+    }
+
+    .port-badge {
+      font-family: var(--font-mono);
+      background: rgba(168, 85, 247, 0.14);
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      color: #d8b4fe;
+      padding: 0.45rem 0.65rem;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    /* --- MINIJUEGO 3: WEB & BASE DE DATOS --- */
+    .code-box {
+      background: #050912;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 12px;
+      padding: 0.95rem 1.05rem;
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      color: #cbd5e1;
+      overflow-x: auto;
+      margin: 0.7rem 0 1rem;
+      line-height: 1.65;
+    }
+
+    .code-err {
+      background: rgba(239, 68, 68, 0.2);
+      border-bottom: 2px wavy var(--neon-red);
+      color: #fca5a5;
+      padding: 0 3px;
+    }
+
+    .flex-preview {
+      height: 135px;
+      border-radius: 12px;
+      background: repeating-linear-gradient(45deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.05) 10px, rgba(15, 23, 42, 0.8) 10px, rgba(15, 23, 42, 0.8) 20px);
+      border: 1px dashed rgba(16, 185, 129, 0.45);
+      display: flex;
+      padding: 0.8rem;
+      margin-top: 0.75rem;
+      transition: all 0.3s ease;
+    }
+
+    .flex-box-item {
+      width: 58px;
+      height: 44px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+      color: #04130f;
+      font-family: var(--font-mono);
+      font-weight: 900;
+      display: grid;
+      place-items: center;
+      font-size: 0.8rem;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.45);
+    }
+
+    /* --- MINIJUEGO 4: CONSOLA SIEM / PHISHING --- */
+    .siem-console {
+      background: #050912;
+      border: 1px solid rgba(236, 72, 153, 0.38);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .siem-header {
+      background: rgba(236, 72, 153, 0.14);
+      padding: 0.7rem 1.1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #f9a8d4;
+      border-bottom: 1px solid rgba(236, 72, 153, 0.28);
+    }
+
+    .siem-body {
+      padding: 1.35rem;
+    }
+
+    .mail-meta {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.83rem;
+      margin-bottom: 1rem;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .mail-content {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.94rem;
+    }
+
+    .inspect-pill {
+      display: inline-block;
+      margin-top: 0.65rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px dashed rgba(245, 158, 11, 0.55);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #fcd34d;
+      word-break: break-all;
+    }
+
+    .feedback-box {
+      margin-top: 1.15rem;
+      padding: 1rem 1.2rem;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      border: 1px solid transparent;
+    }
+
+    .feedback-box.success {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.45);
+      color: #a7f3d0;
+    }
+
+    .feedback-box.warning {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #fde68a;
+    }
+
+    .feedback-box.error {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.45);
+      color: #fecaca;
+    }
+
+    /* ==========================================================================
+       7. PANTALLA DE RESULTADOS (INFORME FINAL)
+       ========================================================================== */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .verdict-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.38rem 0.9rem;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 0.85rem;
+    }
+
+    .verdict-badge.match {
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid var(--neon-green);
+      color: var(--neon-green);
+    }
+
+    .verdict-badge.hidden-talent {
+      background: rgba(168, 85, 247, 0.18);
+      border: 1px solid var(--neon-purple);
+      color: #e9d5ff;
+    }
+
+    .bar-row {
+      margin-bottom: 0.95rem;
+    }
+
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .bar-track {
+      height: 12px;
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .radar-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .recommendation-box {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(168, 85, 247, 0.12));
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: var(--radius-md);
+      padding: 1.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .pathway-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .pathway-card {
+      background: rgba(7, 11, 20, 0.72);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    .pathway-card h4 {
+      color: var(--neon-cyan);
+      font-size: 0.95rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .db-export-box {
+      background: #050912;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: var(--radius-md);
+      padding: 1.2rem;
+    }
+
+    .db-export-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    pre.sql-output {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: #7dd3fc;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      line-height: 1.55;
+      background: rgba(15, 23, 42, 0.65);
+      padding: 0.9rem;
+      border-radius: 10px;
+    }
+
+    /* ==========================================================================
+       8. FASES REALES DEL PROYECTO E INFRAESTRUCTURA SMR
+       ========================================================================== */
+    .subtabs {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 1.8rem;
+      flex-wrap: wrap;
+    }
+
+    .subtab-btn {
+      padding: 0.7rem 1.35rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      background: rgba(13, 20, 36, 0.8);
+      color: var(--text-muted);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-sans);
+    }
+
+    .subtab-btn.active {
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+      color: #04070e;
+      border-color: transparent;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.28);
+    }
+
+    .phases-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .phase-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .phase-badge {
+      align-self: flex-start;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(0, 240, 255, 0.12);
+      color: var(--neon-cyan);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+    }
+
+    .phase-badge.eval2 {
+      background: rgba(168, 85, 247, 0.16);
+      color: #d8b4fe;
+      border-color: rgba(168, 85, 247, 0.45);
+    }
+
+    .phase-card ul {
+      padding-left: 1.1rem;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .accordion {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .acc-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .acc-trigger {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      padding: 1.15rem 1.35rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      text-align: left;
+      font-family: var(--font-sans);
+    }
+
+    .acc-trigger:hover {
+      background: rgba(0, 240, 255, 0.05);
+    }
+
+    .acc-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+      padding: 0 1.35rem;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    .acc-item.open .acc-content {
+      max-height: 520px;
+      padding: 0 1.35rem 1.25rem;
+    }
+
+    .acc-item.open .acc-icon {
+      transform: rotate(45deg);
+      color: var(--neon-cyan);
+    }
+
+    .acc-icon {
+      font-family: var(--font-mono);
+      font-size: 1.3rem;
+      transition: transform 0.25s;
+    }
+
+    /* ==========================================================================
+       9. REPARTO EQUITATIVO (25% CADA INTEGRANTE) Y FOOTER
+       ========================================================================== */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .member-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .member-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pct-badge {
+      font-family: var(--font-mono);
+      font-weight: 900;
+      font-size: 1rem;
+      padding: 0.28rem 0.7rem;
+      border-radius: 10px;
+      background: rgba(0, 240, 255, 0.14);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      color: var(--neon-cyan);
+    }
+
+    .member-role {
+      font-size: 0.84rem;
+      color: var(--neon-purple);
+      font-weight: 700;
+    }
+
+    .member-tasks {
+      padding-left: 1.1rem;
+      color: var(--text-muted);
+      font-size: 0.87rem;
+      display: grid;
+      gap: 0.3rem;
+    }
+
+    .total-bar-card {
+      margin-top: 1.4rem;
+      text-align: center;
+      padding: 1.1rem 1.5rem;
+    }
+
+    .stacked-bar {
+      display: flex;
+      height: 16px;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 0.7rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-dim);
+      font-size: 0.86rem;
+      background: rgba(4, 7, 14, 0.75);
+    }
+
+    /* ==========================================================================
+       10. RESPONSIVE
+       ========================================================================== */
+    @media (max-width: 900px) {
+      .hw-layout, .results-grid {
+        grid-template-columns: 1fr;
+      }
+      .hw-summary {
+        position: static;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .progress-strip {
+        display: none;
+      }
+      .glass-card {
+        padding: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================== BARRA DE NAVEGACIÓN FIJA ===================== -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#inicio" class="brand">
+        <span class="brand-badge">SMR</span>
+        <span>SMR Tech Finder</span>
+      </a>
+
+      <!-- Indicador LED de progreso completo -->
+      <nav class="progress-strip" aria-label="Progreso del test">
+        <button class="led-step active" id="led-perfil" onclick="goToSection('evaluacion')">
+          <span class="led-dot"></span>Perfil
+        </button>
+        <button class="led-step" id="led-hw" onclick="openGame(1)">
+          <span class="led-dot"></span>1. HW
+        </button>
+        <button class="led-step" id="led-net" onclick="openGame(2)">
+          <span class="led-dot"></span>2. Redes
+        </button>
+        <button class="led-step" id="led-web" onclick="openGame(3)">
+          <span class="led-dot"></span>3. Web/BD
+        </button>
+        <button class="led-step" id="led-sec" onclick="openGame(4)">
+          <span class="led-dot"></span>4. Seg.
+        </button>
+        <button class="led-step" id="led-res" onclick="goToSection('resultados')">
+          <span class="led-dot"></span>Informe
+        </button>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="#proyecto" class="nav-link">Proyecto SMR</a>
+        <a href="#equipo" class="nav-link">Equipo 25%</a>
+        <button class="sound-btn" id="soundToggle" onclick="toggleSound()">🔊 SFX: ON</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===================== 1. HERO SECTION ===================== -->
+    <section id="inicio" class="hero">
+      <span class="pill-tag">⚡ Proyecto Intermodular · 2º SMR</span>
+      <h1>SMR Tech Finder:<br>Descubre tu camino en la informática</h1>
+      <p class="hero-sub">
+        Plataforma gamificada de orientación educativa. Responde 5 preguntas vocacionales, supera los 4 retos prácticos de nuestros tutores de SMR y obtén un informe técnico con tu perfil real y recomendación de Grado Superior o salida laboral.
+      </p>
+
+      <div class="hero-cta-group">
+        <button class="btn btn-primary" onclick="startJourney()">🚀 Comenzar el Reto</button>
+        <a href="#proyecto" class="btn btn-outline">🛠️ Ver Arquitectura y Fases SMR</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-box"><strong>5 Preguntas</strong><span>Evaluación vocacional previa</span></div>
+        <div class="stat-box"><strong>4 Retos</strong><span>Minijuegos prácticos evaluables</span></div>
+        <div class="stat-box"><strong>400 Pts</strong><span>Puntuación técnica máxima</span></div>
+        <div class="stat-box"><strong>100% SMR</strong><span>Hardware, Redes, Web/BD y Seg.</span></div>
+      </div>
+
+      <!-- Tarjetas de los 4 Profesores Tutores -->
+      <div class="teachers-grid">
+        <!-- Profesor Aitor -->
+        <article class="glass-card teacher-card" style="--accent: #00f0ff;">
+          <div>
+            <div class="teacher-top">
+              <div class="teacher-avatar">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00f0ff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                  <rect x="9" y="9" width="6" height="6"></rect>
+                  <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"></path>
+                </svg>
+              </div>
+              <div>
+                <span class="teacher-module">Montaje y Hardware</span>
+                <h3>Prof. Aitor Escudero</h3>
+              </div>
+            </div>
+            <p>Especialista en arquitectura de equipos y servidores. Evaluará tu criterio montando un PC compatible ajustado a presupuesto.</p>
+          </div>
+          <div class="teacher-footer">
+            <span class="score-chip" id="chip-hw">Pendiente</span>
+            <button class="btn btn-outline" style="padding:0.45rem 0.85rem;font-size:0.82rem;" onclick="openGame(1)">Ir al Reto 1</button>
+          </div>
+        </article>
+
+        <!-- Profesor Alfredo -->
+        <article class="glass-card teacher-card" style="--accent: #a855f7;">
+          <div>
+            <div class="teacher-top">
+              <div class="teacher-avatar">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="5" r="3"></circle>
+                  <circle cx="5" cy="19" r="3"></circle>
+                  <circle cx="19" cy="19" r="3"></circle>
+                  <path d="M10.5 7.5 6.5 16.5M13.5 7.5l4 9M8 19h8"></path>
+                </svg>
+              </div>
+              <div>
+                <span class="teacher-module">Redes y Conectividad</span>
+                <h3>Prof. Alfredo Brito</h3>
+              </div>
+            </div>
+            <p>Experto en redes locales y direccionamiento IP. Pondrá a prueba tus reflejos con subredes /24, DNS local, Gateway y puertos.</p>
+          </div>
+          <div class="teacher-footer">
+            <span class="score-chip" id="chip-net">Pendiente</span>
+            <button class="btn btn-outline" style="padding:0.45rem 0.85rem;font-size:0.82rem;" onclick="openGame(2)">Ir al Reto 2</button>
+          </div>
+        </article>
+
+        <!-- Profesor Mario -->
+        <article class="glass-card teacher-card" style="--accent: #10b981;">
+          <div>
+            <div class="teacher-top">
+              <div class="teacher-avatar">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                  <line x1="14" y1="4" x2="10" y2="20"></line>
+                </svg>
+              </div>
+              <div>
+                <span class="teacher-module">Web y Bases de Datos</span>
+                <h3>Prof. Mario Avendaño</h3>
+              </div>
+            </div>
+            <p>Desarrollador web y administrador SQL. Te retará a cazar bugs de código, diseñar tablas MySQL y dominar CSS Flexbox en vivo.</p>
+          </div>
+          <div class="teacher-footer">
+            <span class="score-chip" id="chip-web">Pendiente</span>
+            <button class="btn btn-outline" style="padding:0.45rem 0.85rem;font-size:0.82rem;" onclick="openGame(3)">Ir al Reto 3</button>
+          </div>
+        </article>
+
+        <!-- Profesor Miguel -->
+        <article class="glass-card teacher-card" style="--accent: #ec4899;">
+          <div>
+            <div class="teacher-top">
+              <div class="teacher-avatar">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <path d="M9 12l2 2 4-4"></path>
+                </svg>
+              </div>
+              <div>
+                <span class="teacher-module">Seguridad Informática</span>
+                <h3>Prof. Miguel Fernández</h3>
+              </div>
+            </div>
+            <p>Especialista en ciberseguridad y backups. Simulará una consola SIEM real donde tendrás que frenar correos de phishing y ataques.</p>
+          </div>
+          <div class="teacher-footer">
+            <span class="score-chip" id="chip-sec">Pendiente</span>
+            <button class="btn btn-outline" style="padding:0.45rem 0.85rem;font-size:0.82rem;" onclick="openGame(4)">Ir al Reto 4</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===================== 2. EVALUACIÓN PERSONAL PREVIA (5 PREGUNTAS) ===================== -->
+    <section id="evaluacion">
+      <div class="section-header">
+        <span class="pill-tag">🧭 Paso 0 · Evaluación Personal Previa</span>
+        <h2>Antes de jugar: cuéntanos qué te motiva</h2>
+        <p>Responde estas 5 preguntas rápidas sobre tus gustos y tus planes tras SMR. Al final compararemos tu vocación inicial con tus resultados reales en los 4 retos.</p>
+      </div>
+
+      <div class="glass-card quiz-shell">
+        <div id="quiz-active-view">
+          <div class="quiz-meta">
+            <span id="quiz-counter">Pregunta 1 de 5</span>
+            <span id="quiz-pct">20%</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="quiz-progress-fill"></div>
+          </div>
+
+          <h3 class="quiz-question-title" id="quiz-question-text"></h3>
+          <div class="options-grid" id="quiz-options"></div>
+
+          <div style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+            <button class="btn btn-outline" id="quiz-prev-btn" onclick="prevQuizQuestion()" disabled>← Anterior</button>
+            <button class="btn btn-primary" id="quiz-next-btn" onclick="nextQuizQuestion()" disabled>Siguiente →</button>
+          </div>
+        </div>
+
+        <div id="quiz-summary-view" class="hidden">
+          <div class="summary-banner">
+            <span class="pill-tag" style="margin-bottom:0.6rem;">✅ Perfil Inicial Registrado</span>
+            <h3 id="quiz-summary-title" style="margin-bottom:0.5rem;"></h3>
+            <p id="quiz-summary-text" style="color:var(--text-muted);margin-bottom:1.25rem;"></p>
+            <div style="display:flex;gap:0.85rem;flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="openGame(1)">🎮 Empezar Reto 1: Hardware</button>
+              <button class="btn btn-outline" onclick="restartQuiz()">↺ Repetir evaluación</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 3. LOS 4 MINIJUEGOS INTERACTIVOS ===================== -->
+    <section id="minijuegos">
+      <div class="section-header">
+        <span class="pill-tag">🎮 Arena de Pruebas · 4 Módulos SMR</span>
+        <h2>Supera los 4 Minijuegos de los Tutores</h2>
+        <p>Cada reto suma hasta 100 puntos en su rama correspondiente. Puedes jugarlos en orden o saltar entre ellos cuando quieras.</p>
+      </div>
+
+      <!-- Pestañas de selección de minijuego -->
+      <div class="game-tabs">
+        <button class="game-tab active" id="tab-g1" onclick="openGame(1, false)">
+          <div><strong>1. Hardware</strong><br><small>Prof. Aitor</small></div>
+          <span class="score-chip" id="tab-score-1">0/100</span>
+        </button>
+        <button class="game-tab" id="tab-g2" onclick="openGame(2, false)">
+          <div><strong>2. Redes Locales</strong><br><small>Prof. Alfredo</small></div>
+          <span class="score-chip" id="tab-score-2">0/100</span>
+        </button>
+        <button class="game-tab" id="tab-g3" onclick="openGame(3, false)">
+          <div><strong>3. Web y BD</strong><br><small>Prof. Mario</small></div>
+          <span class="score-chip" id="tab-score-3">0/100</span>
+        </button>
+        <button class="game-tab" id="tab-g4" onclick="openGame(4, false)">
+          <div><strong>4. Seguridad</strong><br><small>Prof. Miguel</small></div>
+          <span class="score-chip" id="tab-score-4">0/100</span>
+        </button>
+      </div>
+
+      <!-- ========== MINIJUEGO 1: HARDWARE (PROF. AITOR) ========== -->
+      <div class="glass-card game-panel active" id="game-1">
+        <div class="tutor-banner" style="--accent: #00f0ff;">
+          <div>
+            <h3>🖥️ Reto 1: Montaje de Estación de Trabajo SMR (Prof. Aitor)</h3>
+            <p><strong>Misión:</strong> Selecciona 5 componentes compatibles (CPU, Placa Base, RAM, GPU y Fuente) sin superar los <strong>850 €</strong>. ¡Vigila el socket, el tipo de RAM y los vatios de la fuente!</p>
+          </div>
+        </div>
+
+        <div class="hw-layout">
+          <div id="hw-catalog"></div>
+
+          <aside class="hw-summary">
+            <h4 style="color:var(--neon-cyan);font-family:var(--font-mono);">RESUMEN DEL MONTAJE</h4>
+            <div class="budget-meter" id="hw-budget-display">0 € / 850 €</div>
+            <div class="progress-bar-wrap" style="margin-bottom:0.8rem;">
+              <div class="progress-bar-fill" id="hw-budget-bar" style="width:0%;"></div>
+            </div>
+
+            <ul class="check-list" id="hw-checks">
+              <li class="warn">⏳ Selecciona los 5 componentes para validar...</li>
+            </ul>
+
+            <button class="btn btn-primary" style="width:100%;" onclick="evaluateHardware()">⚡ Validar Montaje</button>
+            <div id="hw-feedback"></div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- ========== MINIJUEGO 2: REDES LOCALES (PROF. ALFREDO) ========== -->
+      <div class="glass-card game-panel" id="game-2">
+        <div class="tutor-banner" style="--accent: #a855f7;">
+          <div>
+            <h3>🌐 Reto 2: Laboratorio de Redes Locales (Prof. Alfredo)</h3>
+            <p><strong>Misión:</strong> Resuelve las 3 pruebas rápidas de infraestructura de red para poner online el servidor del instituto (subred /24, configuración IP estática y puertos).</p>
+          </div>
+        </div>
+
+        <div class="sub-stage-grid">
+          <!-- Fase 2A -->
+          <div class="stage-box">
+            <h4>FASE 2A · Subred 192.168.10.0/24 (35 pts)</h4>
+            <p style="font-size:0.86rem;color:var(--text-muted);margin-bottom:0.8rem;">
+              Nuestra LAN usa la red <code style="color:var(--neon-cyan);">192.168.10.0/24</code>. Responde:
+            </p>
+            <div class="form-row">
+              <label for="net-mask">¿Cuál es la máscara en decimal?</label>
+              <select id="net-mask" class="cyber-select">
+                <option value="">-- Selecciona --</option>
+                <option value="255.255.0.0">255.255.0.0</option>
+                <option value="255.255.255.0">255.255.255.0</option>
+                <option value="255.255.255.128">255.255.255.128</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="net-broadcast">¿Cuál es su dirección de Broadcast?</label>
+              <select id="net-broadcast" class="cyber-select">
+                <option value="">-- Selecciona --</option>
+                <option value="192.168.10.1">192.168.10.1</option>
+                <option value="192.168.10.254">192.168.10.254</option>
+                <option value="192.168.10.255">192.168.10.255</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fase 2B -->
+          <div class="stage-box">
+            <h4>FASE 2B · IP Estática del Servidor (35 pts)</h4>
+            <p style="font-size:0.86rem;color:var(--text-muted);margin-bottom:0.8rem;">
+              Configura la interfaz del servidor web en la red <code style="color:var(--neon-cyan);">192.168.10.0/24</code> (el router está en <code>.1</code> y el DNS local está en el propio router o en <code>192.168.10.10</code>).
+            </p>
+            <div class="form-row">
+              <label for="net-ip">IP Estática del Servidor (elige una válida libre):</label>
+              <select id="net-ip" class="cyber-select">
+                <option value="">-- Selecciona --</option>
+                <option value="192.168.10.10">192.168.10.10 (Estática libre)</option>
+                <option value="192.168.20.10">192.168.20.10 (Otra subred)</option>
+                <option value="192.168.10.0">192.168.10.0 (ID de red)</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="net-gw">Puerta de Enlace (Gateway):</label>
+              <select id="net-gw" class="cyber-select">
+                <option value="">-- Selecciona --</option>
+                <option value="192.168.10.1">192.168.10.1</option>
+                <option value="127.0.0.1">127.0.0.1</option>
+                <option value="255.255.255.255">255.255.255.255</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fase 2C -->
+          <div class="stage-box">
+            <h4>FASE 2C · Mapeo de Puertos TCP/UDP (30 pts)</h4>
+            <p style="font-size:0.86rem;color:var(--text-muted);margin-bottom:0.8rem;">
+              Asocia cada servicio esencial de SMR con su puerto estándar:
+            </p>
+            <div class="port-row">
+              <span class="port-badge">HTTP (Web)</span>
+              <select id="port-http" class="cyber-select">
+                <option value="">Puerto...</option>
+                <option value="22">22</option><option value="53">53</option><option value="80">80</option><option value="443">443</option>
+              </select>
+            </div>
+            <div class="port-row">
+              <span class="port-badge">HTTPS (Web segura)</span>
+              <select id="port-https" class="cyber-select">
+                <option value="">Puerto...</option>
+                <option value="22">22</option><option value="53">53</option><option value="80">80</option><option value="443">443</option>
+              </select>
+            </div>
+            <div class="port-row">
+              <span class="port-badge">SSH (Remoto)</span>
+              <select id="port-ssh" class="cyber-select">
+                <option value="">Puerto...</option>
+                <option value="22">22</option><option value="53">53</option><option value="80">80</option><option value="443">443</option>
+              </select>
+            </div>
+            <div class="port-row">
+              <span class="port-badge">DNS (Dominios)</span>
+              <select id="port-dns" class="cyber-select">
+                <option value="">Puerto...</option>
+                <option value="22">22</option><option value="53">53</option><option value="80">80</option><option value="443">443</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
+          <button class="btn btn-purple" onclick="evaluateNetworking()">📡 Comprobar Red y Conectar</button>
+        </div>
+        <div id="net-feedback"></div>
+      </div>
+
+      <!-- ========== MINIJUEGO 3: WEB Y BASES DE DATOS (PROF. MARIO) ========== -->
+      <div class="glass-card game-panel" id="game-3">
+        <div class="tutor-banner" style="--accent: #10b981;">
+          <div>
+            <h3>💻 Reto 3: Desarrollo Web y Base de Datos (Prof. Mario)</h3>
+            <p><strong>Misión:</strong> Resuelve un bug en SQL, estructura correctamente nuestra tabla MySQL de puntuaciones y centra el núcleo del servidor usando CSS Flexbox en tiempo real.</p>
+          </div>
+        </div>
+
+        <div class="sub-stage-grid">
+          <!-- Fase 3A -->
+          <div class="stage-box">
+            <h4>FASE 3A · Caza del Bug SQL (35 pts)</h4>
+            <p style="font-size:0.85rem;color:var(--text-muted);">Esta consulta intenta mostrar a los alumnos con más de 80 puntos en Redes, pero falla:</p>
+            <div class="code-box">
+              SELECT nombre, pts_redes<br>
+              <span class="code-err">FORM</span> resultados_smr<br>
+              WHERE pts_redes &gt;= 80;
+            </div>
+            <div class="form-row">
+              <label for="web-sql-fix">¿Cuál es la corrección correcta?</label>
+              <select id="web-sql-fix" class="cyber-select">
+                <option value="">-- Selecciona la solución --</option>
+                <option value="from">Cambiar FORM por FROM</option>
+                <option value="where">Cambiar WHERE por WHEN</option>
+                <option value="select">Cambiar SELECT por SHOW</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fase 3B -->
+          <div class="stage-box">
+            <h4>FASE 3B · Diseño Tabla MySQL (35 pts)</h4>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.8rem;">
+              Define los atributos correctos para la tabla <code>resultados_test</code>:
+            </p>
+            <div class="form-row">
+              <label for="db-pk">Clave primaria única autoincremental (id_test):</label>
+              <select id="db-pk" class="cyber-select">
+                <option value="">-- Elige definición --</option>
+                <option value="pk_ok">INT AUTO_INCREMENT PRIMARY KEY</option>
+                <option value="pk_bad1">VARCHAR(50) NULL</option>
+                <option value="pk_bad2">BOOLEAN DEFAULT FALSE</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="db-score-type">Tipo de dato ideal para guardar la puntuación (0-100):</label>
+              <select id="db-score-type" class="cyber-select">
+                <option value="">-- Elige tipo --</option>
+                <option value="int">INT / TINYINT UNSIGNED</option>
+                <option value="date">DATE</option>
+                <option value="blob">LONGBLOB</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fase 3C -->
+          <div class="stage-box">
+            <h4>FASE 3C · Laboratorio CSS Flexbox (30 pts)</h4>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0.6rem;">
+              Coloca el bloque <strong>CORE</strong> exactamente en el <strong>centro horizontal y vertical</strong>:
+            </p>
+            <div class="form-row">
+              <label for="css-justify">justify-content (eje horizontal):</label>
+              <select id="css-justify" class="cyber-select" onchange="updateFlexPreview()">
+                <option value="flex-start">flex-start</option>
+                <option value="center">center</option>
+                <option value="flex-end">flex-end</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="css-align">align-items (eje vertical):</label>
+              <select id="css-align" class="cyber-select" onchange="updateFlexPreview()">
+                <option value="flex-start">flex-start</option>
+                <option value="center">center</option>
+                <option value="flex-end">flex-end</option>
+              </select>
+            </div>
+            <div class="flex-preview" id="flex-preview-box" style="justify-content:flex-start;align-items:flex-start;">
+              <div class="flex-box-item">CORE</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-success" onclick="evaluateWebDB()">💾 Compilar y Validar Código</button>
+        <div id="web-feedback"></div>
+      </div>
+
+      <!-- ========== MINIJUEGO 4: SEGURIDAD INFORMÁTICA (PROF. MIGUEL) ========== -->
+      <div class="glass-card game-panel" id="game-4">
+        <div class="tutor-banner" style="--accent: #ec4899;">
+          <div>
+            <h3>🛡️ Reto 4: Consola SIEM & Detector de Phishing (Prof. Miguel)</h3>
+            <p><strong>Misión:</strong> Analiza 4 alertas reales de correo y logs del servidor (25 pts cada una). Inspecciona el remitente, la URL real y los adjuntos antes de clasificar cada evento.</p>
+          </div>
+        </div>
+
+        <div class="siem-console">
+          <div class="siem-header">
+            <span id="siem-case-label">INCIDENTE 1 / 4 · ANALIZADOR ACTIVO</span>
+            <span id="siem-score-live">Puntuación parcial: 0 / 100</span>
+          </div>
+          <div class="siem-body" id="siem-body"></div>
+        </div>
+        <div id="sec-feedback"></div>
+      </div>
+    </section>
+
+    <!-- ===================== 4. PANTALLA DE RESULTADOS (INFORME FINAL) ===================== -->
+    <section id="resultados">
+      <div class="section-header">
+        <span class="pill-tag">📊 Diagnóstico Inteligente SMR</span>
+        <h2>Tu Informe Vocacional y Técnico</h2>
+        <p>Cruzamos tus respuestas personales iniciales con tu rendimiento práctico en los 4 retos para recomendarte tu mejor camino tras SMR.</p>
+      </div>
+
+      <div class="glass-card">
+        <div id="results-locked-msg" style="text-align:center;padding:1.5rem 0.5rem;">
+          <h3 style="margin-bottom:0.6rem;">🔒 Completa la Evaluación y los 4 Minijuegos para un diagnóstico 100% exacto</h3>
+          <p style="color:var(--text-muted);margin-bottom:1.25rem;" id="results-progress-hint">Aún tienes retos pendientes. Puedes completarlos ahora o previsualizar tu informe parcial.</p>
+          <div style="display:flex;justify-content:center;gap:0.85rem;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="continuePendingStep()">⚡ Ir al siguiente paso pendiente</button>
+            <button class="btn btn-outline" onclick="renderResults(true)">👁️ Ver informe con datos actuales</button>
+          </div>
+        </div>
+
+        <div id="results-content" class="hidden">
+          <div class="results-grid">
+            <div>
+              <div id="verdict-badge-wrap"></div>
+              <h3 id="result-headline" style="font-size:1.55rem;margin-bottom:0.6rem;"></h3>
+              <p id="result-narrative" style="color:var(--text-muted);margin-bottom:1.35rem;"></p>
+
+              <!-- Gráfica de barras animadas -->
+              <div id="bars-container"></div>
+            </div>
+
+            <!-- Gráfico Radar SVG dinámico -->
+            <div class="radar-wrap">
+              <h4 style="font-family:var(--font-mono);color:var(--neon-cyan);margin-bottom:0.6rem;">RADAR DE COMPETENCIAS SMR</h4>
+              <svg id="radar-svg" width="290" height="270" viewBox="0 0 290 270" aria-label="Gráfico radar de puntuaciones"></svg>
+              <span id="total-score-label" style="font-family:var(--font-mono);font-size:0.9rem;color:var(--text-muted);margin-top:0.4rem;"></span>
+            </div>
+          </div>
+
+          <!-- Recomendación de Grado Superior / Salidas -->
+          <div class="recommendation-box">
+            <span class="pill-tag" style="margin-bottom:0.6rem;">🎓 Recomendación Post-SMR Personalizada</span>
+            <h3 id="rec-title" style="margin-bottom:0.45rem;"></h3>
+            <p id="rec-desc" style="color:var(--text-muted);"></p>
+            <div class="pathway-cards" id="rec-pathways"></div>
+          </div>
+
+          <!-- Simulador de registro en MySQL / JSON -->
+          <div class="db-export-box">
+            <div class="db-export-header">
+              <div>
+                <h4 style="color:var(--neon-cyan);font-family:var(--font-mono);">🗄️ Simulador de Persistencia MySQL / JSON</h4>
+                <small style="color:var(--text-muted);">Consulta generada automáticamente lista para nuestra base de datos MariaDB/MySQL del proyecto SMR.</small>
+              </div>
+              <div style="display:flex;gap:0.5rem;">
+                <button class="btn btn-outline" style="padding:0.45rem 0.85rem;font-size:0.8rem;" onclick="copyDbOutput()">📋 Copiar SQL + JSON</button>
+                <button class="btn btn-outline" style="padding:0.45rem 0.85rem;font-size:0.8rem;" onclick="resetAll()">↺ Reiniciar Todo</button>
+              </div>
+            </div>
+            <pre class="sql-output" id="db-output-pre"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 5. PROYECTO SMR: FASES REALES E INFRAESTRUCTURA ===================== -->
+    <section id="proyecto">
+      <div class="section-header">
+        <span class="pill-tag">🏗️ Memoria Técnica y Despliegue</span>
+        <h2>Fases Reales del Proyecto e Infraestructura SMR</h2>
+        <p>Integración de módulos de 1º y 2º curso de Sistemas Microinformáticos y Redes: planificación, despliegue real en servidores, desarrollo, seguridad y evaluación.</p>
+      </div>
+
+      <div class="subtabs">
+        <button class="subtab-btn active" id="btn-tab-phases" onclick="switchProjectTab('phases')">📅 4 Fases Reales (1ª y 2ª Eval.)</button>
+        <button class="subtab-btn" id="btn-tab-infra" onclick="switchProjectTab('infra')">⚙️ Arquitectura Técnica SMR</button>
+      </div>
+
+      <!-- Pestaña A: 4 Fases Reales -->
+      <div id="project-phases" class="phases-grid">
+        <article class="glass-card phase-card">
+          <span class="phase-badge">FASE 1 · 1ª EVALUACIÓN</span>
+          <h3>Planificación, Diseño y Reparto (25%)</h3>
+          <ul>
+            <li>Definición de la idea intermodular: web gamificada de orientación para alumnado de SMR.</li>
+            <li>Reparto equitativo de responsabilidades (25% cada miembro) y calendario en Trello.</li>
+            <li>Diseño de wireframes, flujo de usuario (5 preguntas + 4 retos) y esquema de red LAN.</li>
+          </ul>
+        </article>
+
+        <article class="glass-card phase-card">
+          <span class="phase-badge">FASE 2 · 1ª EVAL. (PROVISIONAL)</span>
+          <h3>Montaje de Servidores y Red Local</h3>
+          <ul>
+            <li>Creación de máquinas virtuales (Ubuntu Server / Windows Server) con recursos asignados.</li>
+            <li>Instalación y configuración del servidor web Apache2/Nginx con VirtualHost propio.</li>
+            <li>Configuración de IP estática (<code>192.168.10.10/24</code>), DHCP y DNS local (<code>smrtechfinder.local</code>).</li>
+            <li>Demostración de prototipo operativo para la calificación provisional de la 1ª Evaluación.</li>
+          </ul>
+        </article>
+
+        <article class="glass-card phase-card">
+          <span class="phase-badge eval2">FASE 3 · 2ª EVALUACIÓN</span>
+          <h3>Desarrollo Web, Retos y Base de Datos</h3>
+          <ul>
+            <li>Programación completa en HTML5, CSS3 (variables, Grid/Flexbox, neón) y JavaScript puro.</li>
+            <li>Implementación de la evaluación previa, los 4 minijuegos interactivos y el motor de diagnóstico.</li>
+            <li>Creación de la base de datos relacional en MariaDB/MySQL (<code>database.sql</code>) para almacenar resultados.</li>
+          </ul>
+        </article>
+
+        <article class="glass-card phase-card">
+          <span class="phase-badge eval2">FASE 4 · 2ª EVAL. (ENTREGA FINAL)</span>
+          <h3>Seguridad, Backups, Memoria y Vídeo</h3>
+          <ul>
+            <li>Hardening del servidor: firewall UFW (solo puertos 80, 443 y 22), HTTPS con SSL/TLS y Fail2Ban.</li>
+            <li>Plan de copias de seguridad automatizadas 3-2-1 mediante <code>cron</code> + <code>mysqldump</code> + <code>rsync</code>.</li>
+            <li>Redacción de la memoria técnica completa (DOCX/PDF) y grabación del vídeo explicativo (máx. 5 min).</li>
+          </ul>
+        </article>
+      </div>
+
+      <!-- Pestaña B: Infraestructura Técnica (Acordeones) -->
+      <div id="project-infra" class="accordion hidden">
+        <div class="acc-item open">
+          <button class="acc-trigger" onclick="toggleAccordion(this)">
+            <span>🖥️ 1. Servidor Web y Virtualización (Sistemas Operativos en Red)</span>
+            <span class="acc-icon">+</span>
+          </button>
+          <div class="acc-content">
+            Despliegue sobre entorno virtualizado (VirtualBox / Proxmox) ejecutando <strong>Ubuntu Server 24.04 LTS</strong> (con servidor <strong>Apache2 / Nginx</strong>) o <strong>Windows Server 2022</strong> (con rol <strong>IIS</strong>). El sitio reside en <code>/var/www/smr-tech-finder</code> bajo un VirtualHost dedicado, optimizado con compresión Gzip y cabeceras de seguridad HTTP.
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="toggleAccordion(this)">
+            <span>🌐 2. Configuración de Red Local (IP Estática, DNS Local y DHCP)</span>
+            <span class="acc-icon">+</span>
+          </button>
+          <div class="acc-content">
+            Subred dedicada <code>192.168.10.0/24</code> con puerta de enlace en <code>192.168.10.1</code>. El servidor web dispone de <strong>IP estática</strong> (<code>192.168.10.10</code>) configurada vía Netplan. El servicio <strong>DHCP</strong> asigna direcciones dinámicas a clientes del aula (rango <code>.50 - .150</code>) y el servidor <strong>DNS local (Bind9)</strong> resuelve el dominio interno <code>www.smrtechfinder.local</code> sin depender de Internet.
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="toggleAccordion(this)">
+            <span>🗄️ 3. Base de Datos Relacional (MySQL / MariaDB)</span>
+            <span class="acc-icon">+</span>
+          </button>
+          <div class="acc-content">
+            Motor <strong>MariaDB / MySQL</strong> securizado (<code>mysql_secure_installation</code>) y accesible solo desde <code>localhost</code>. Almacena los intentos del alumnado en la tabla <code>resultados_test</code> (incluyendo perfil vocacional inicial, puntuaciones de los 4 módulos, grado superior recomendado y marca temporal), permitiendo estadísticas del centro educativo. El script completo se incluye en <code>database.sql</code>.
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger" onclick="toggleAccordion(this)">
+            <span>🛡️ 4. Ciberseguridad y Plan de Copias de Seguridad (Backups 3-2-1)</span>
+            <span class="acc-icon">+</span>
+          </button>
+          <div class="acc-content">
+            <strong>Seguridad activa:</strong> Firewall <code>UFW</code> en denegación por defecto (permitiendo únicamente puertos 22 SSH con clave pública, 80 y 443 HTTPS con certificado SSL/TLS), protección anti fuerza bruta con <strong>Fail2Ban</strong> y saneamiento de entradas frente a XSS/SQLi.<br><br>
+            <strong>Backups (Regla 3-2-1):</strong> Tareas programadas en <code>cron</code> cada madrugada a las 03:00 ejecutando <code>mysqldump</code> y empaquetado <code>tar.gz</code> de <code>/var/www/smr-tech-finder</code> hacia un almacenamiento secundario local y réplica externa cifrada.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 6. REPARTO EQUITATIVO (25% CADA INTEGRANTE) ===================== -->
+    <section id="equipo">
+      <div class="section-header">
+        <span class="pill-tag">🤝 Trabajo en Equipo · Reparto Equitativo</span>
+        <h2>Distribución del Proyecto (25% cada integrante)</h2>
+        <p>Cada miembro del grupo de 2º SMR asume un bloque técnico real del despliegue y ejerce como profesor tutor en su minijuego.</p>
+      </div>
+
+      <div class="team-grid">
+        <article class="glass-card member-card">
+          <div class="member-head">
+            <h3>Aitor Escudero</h3>
+            <span class="pct-badge">25%</span>
+          </div>
+          <span class="member-role">Sistemas y Servidores · Prof. de Hardware</span>
+          <ul class="member-tasks">
+            <li>Instalación y dimensionamiento de máquinas virtuales.</li>
+            <li>Despliegue y afinado del servidor web Apache/Nginx/IIS.</li>
+            <li>Diseño del Reto 1 (compatibilidad de hardware y presupuesto).</li>
+          </ul>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--neon-cyan);"></div></div>
+        </article>
+
+        <article class="glass-card member-card">
+          <div class="member-head">
+            <h3>Alfredo Brito</h3>
+            <span class="pct-badge" style="color:#d8b4fe;border-color:rgba(168,85,247,0.45);background:rgba(168,85,247,0.14);">25%</span>
+          </div>
+          <span class="member-role">Redes y Conectividad · Prof. de Redes</span>
+          <ul class="member-tasks">
+            <li>Esquema LAN, direccionamiento IP estático y subredes.</li>
+            <li>Configuración de servicios DHCP y DNS local (Bind9).</li>
+            <li>Diseño del Reto 2 (subredes /24, gateway y puertos).</li>
+          </ul>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--neon-purple);"></div></div>
+        </article>
+
+        <article class="glass-card member-card">
+          <div class="member-head">
+            <h3>Mario Avendaño</h3>
+            <span class="pct-badge" style="color:#6ee7b7;border-color:rgba(16,185,129,0.45);background:rgba(16,185,129,0.14);">25%</span>
+          </div>
+          <span class="member-role">Desarrollo Web y BD · Prof. de Programación</span>
+          <ul class="member-tasks">
+            <li>Maquetación HTML5/CSS3 moderna y lógica JavaScript.</li>
+            <li>Diseño relacional de la base de datos MySQL/MariaDB.</li>
+            <li>Diseño del Reto 3 (caza del bug SQL, tabla BD y Flexbox).</li>
+          </ul>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--neon-green);"></div></div>
+        </article>
+
+        <article class="glass-card member-card">
+          <div class="member-head">
+            <h3>Miguel Fernández</h3>
+            <span class="pct-badge" style="color:#f9a8d4;border-color:rgba(236,72,153,0.45);background:rgba(236,72,153,0.14);">25%</span>
+          </div>
+          <span class="member-role">Ciberseguridad y Backups · Prof. de Seguridad</span>
+          <ul class="member-tasks">
+            <li>Firewall UFW, certificados SSL/TLS (HTTPS) y Fail2Ban.</li>
+            <li>Scripts de copias de seguridad automatizadas (regla 3-2-1).</li>
+            <li>Diseño del Reto 4 (consola SIEM y detección de phishing).</li>
+          </ul>
+          <div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--neon-pink);"></div></div>
+        </article>
+      </div>
+
+      <div class="glass-card total-bar-card">
+        <strong>Carga Total del Proyecto Intermodular: 100% Equitativo (25% Aitor · 25% Alfredo · 25% Mario · 25% Miguel)</strong>
+        <div class="stacked-bar" aria-label="Reparto 25% cada integrante">
+          <div style="width:25%;background:var(--neon-cyan);" title="Aitor 25%"></div>
+          <div style="width:25%;background:var(--neon-purple);" title="Alfredo 25%"></div>
+          <div style="width:25%;background:var(--neon-green);" title="Mario 25%"></div>
+          <div style="width:25%;background:var(--neon-pink);" title="Miguel 25%"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p><strong>SMR Tech Finder</strong> · Proyecto Intermodular de 2º Sistemas Microinformáticos y Redes (SMR)</p>
+    <p style="margin-top:0.35rem;">Desarrollado por Aitor Escudero, Alfredo Brito, Mario Avendaño y Miguel Fernández</p>
+  </footer>
+
+  <!-- ===================== LÓGICA JAVASCRIPT COMPLETA ===================== -->
+  <script>
+    /* =========================================================================
+       1. SINTETIZADOR DE SONIDO ARCADE (WEB AUDIO API)
+       ========================================================================= */
+    let soundEnabled = true;
+    let audioCtx = null;
+
+    function getAudioCtx() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playTone(freq, duration = 0.09, type = 'sine', vol = 0.07) {
+      if (!soundEnabled) return;
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(vol, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + duration);
+    }
+
+    const sfx = {
+      click: () => playTone(520, 0.06, 'triangle', 0.05),
+      ok: () => { playTone(587, 0.09, 'sine', 0.07); setTimeout(() => playTone(880, 0.14, 'sine', 0.07), 80); },
+      err: () => { playTone(210, 0.12, 'sawtooth', 0.06); setTimeout(() => playTone(165, 0.16, 'sawtooth', 0.06), 100); },
+      win: () => {
+        [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => playTone(f, 0.15, 'triangle', 0.07), i * 95));
+      }
+    };
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundToggle').textContent = soundEnabled ? '🔊 SFX: ON' : '🔇 SFX: OFF';
+      if (soundEnabled) sfx.click();
+    }
+
+    /* =========================================================================
+       2. ESTADO GLOBAL DE LA APLICACIÓN
+       ========================================================================= */
+    const state = {
+      quizDone: false,
+      quizIndex: 0,
+      quizAnswers: [null, null, null, null, null],
+      postPlan: 'gs', // 'gs' | 'work' | 'cert' | 'unsure'
+      preferredBranch: 'hw', // 'hw' | 'net' | 'web' | 'sec'
+      scores: { hw: null, net: null, web: null, sec: null },
+      hwSelection: { cpu: null, mobo: null, ram: null, gpu: null, psu: null },
+      siemIndex: 0,
+      siemScore: 0,
+      siemAnswered: false
+    };
+
+    const BRANCH_META = {
+      hw:  { name: 'Hardware y Montaje', color: '#00f0ff', teacher: 'Prof. Aitor' },
+      net: { name: 'Redes Locales',      color: '#a855f7', teacher: 'Prof. Alfredo' },
+      web: { name: 'Web y Bases de Datos', color: '#10b981', teacher: 'Prof. Mario' },
+      sec: { name: 'Seguridad Informática', color: '#ec4899', teacher: 'Prof. Miguel' }
+    };
+
+    function goToSection(id) {
+      sfx.click();
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function startJourney() {
+      sfx.ok();
+      goToSection('evaluacion');
+    }
+
+    /* =========================================================================
+       3. EVALUACIÓN PERSONAL PREVIA (5 PREGUNTAS)
+       ========================================================================= */
+    const QUIZ_QUESTIONS = [
+      {
+        text: '1. Al terminar el Grado Medio de SMR, ¿qué te gustaría hacer?',
+        type: 'plan',
+        options: [
+          { label: 'Estudiar un Grado Superior (FP)', desc: 'Quiero seguir formándome (ASIR, DAW, DAM...)', value: 'gs' },
+          { label: 'Entrar a trabajar directamente', desc: 'Busco experiencia laboral cuanto antes como técnico', value: 'work' },
+          { label: 'Hacer certificaciones y especializarme', desc: 'Prefiero cursos cortos oficiales (Cisco, CompTIA...)', value: 'cert' },
+          { label: 'Aún no lo tengo claro', desc: 'Quiero ver qué se me da mejor antes de decidir', value: 'unsure' }
+        ]
+      },
+      {
+        text: '2. ¿Qué asignatura o ámbito de SMR te atrae más a primera vista?',
+        type: 'branch',
+        options: [
+          { label: 'Montaje y Mantenimiento de Equipos', desc: 'Cacharrear, abrir PCs, placas base, GPUs y servidores', value: 'hw' },
+          { label: 'Redes Locales y Servicios en Red', desc: 'Routers, switches, direcciones IP, DNS y servidores', value: 'net' },
+          { label: 'Aplicaciones Web y Bases de Datos', desc: 'Crear páginas web, programar y gestionar datos SQL', value: 'web' },
+          { label: 'Seguridad Informática', desc: 'Detectar ataques, firewalls, cifrado y proteger sistemas', value: 'sec' }
+        ]
+      },
+      {
+        text: '3. En tu primer día de prácticas (FCT), ¿qué tarea elegirías?',
+        type: 'branch',
+        options: [
+          { label: 'Montar y diagnosticar equipos nuevos', desc: 'Preparar estaciones de trabajo y resolver averías físicas', value: 'hw' },
+          { label: 'Configurar la red y el Wi-Fi de la oficina', desc: 'Asignar IPs, VLANs, DNS y revisar conectividad', value: 'net' },
+          { label: 'Mejorar la web de la empresa y su BD', desc: 'Corregir código HTML/CSS/JS y hacer consultas SQL', value: 'web' },
+          { label: 'Revisar alertas de seguridad y backups', desc: 'Frenar phishing, revisar logs y asegurar copias', value: 'sec' }
+        ]
+      },
+      {
+        text: '4. ¿Qué relación tienes con escribir código y programar?',
+        type: 'branch',
+        options: [
+          { label: 'Me encanta programar y diseñar interfaces', desc: 'Disfruto resolviendo bugs y creando apps desde cero', value: 'web' },
+          { label: 'Solo scripts útiles para automatizar redes', desc: 'Prefiero consolas, comandos y arquitectura de red', value: 'net' },
+          { label: 'Prefiero el hardware y tocar componentes', desc: 'Me motiva más el rendimiento físico de las máquinas', value: 'hw' },
+          { label: 'Me gusta analizar fallos y blindar código', desc: 'Pienso en cómo podría entrar un atacante y cómo pararlo', value: 'sec' }
+        ]
+      },
+      {
+        text: '5. ¿Cómo te imaginas trabajando dentro de 3 años?',
+        type: 'branch',
+        options: [
+          { label: 'Técnico de Sistemas / Soporte Hardware', desc: 'Manteniendo parques informáticos y servidores físicos', value: 'hw' },
+          { label: 'Administrador de Redes e Infraestructura', desc: 'Gestionando routers, servidores y redes corporativas', value: 'net' },
+          { label: 'Desarrollador Web / Multiplataforma', desc: 'Programando aplicaciones, webs y bases de datos', value: 'web' },
+          { label: 'Analista de Ciberseguridad (SOC)', desc: 'Defendiendo empresas frente a ciberataques y malware', value: 'sec' }
+        ]
+      }
+    ];
+
+    function renderQuizQuestion() {
+      const q = QUIZ_QUESTIONS[state.quizIndex];
+      const num = state.quizIndex + 1;
+      document.getElementById('quiz-counter').textContent = `Pregunta ${num} de ${QUIZ_QUESTIONS.length}`;
+      const pct = Math.round((num / QUIZ_QUESTIONS.length) * 100);
+      document.getElementById('quiz-pct').textContent = `${pct}%`;
+      document.getElementById('quiz-progress-fill').style.width = `${pct}%`;
+      document.getElementById('quiz-question-text').textContent = q.text;
+
+      const wrap = document.getElementById('quiz-options');
+      wrap.innerHTML = '';
+      q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-card' + (state.quizAnswers[state.quizIndex] === opt.value ? ' selected' : '');
+        btn.innerHTML = `<strong>${opt.label}</strong><small>${opt.desc}</small>`;
+        btn.onclick = () => {
+          sfx.click();
+          state.quizAnswers[state.quizIndex] = opt.value;
+          renderQuizQuestion();
+        };
+        wrap.appendChild(btn);
+      });
+
+      document.getElementById('quiz-prev-btn').disabled = state.quizIndex === 0;
+      const nextBtn = document.getElementById('quiz-next-btn');
+      nextBtn.disabled = state.quizAnswers[state.quizIndex] === null;
+      nextBtn.textContent = state.quizIndex === QUIZ_QUESTIONS.length - 1 ? 'Ver mi perfil inicial ✓' : 'Siguiente →';
+    }
+
+    function prevQuizQuestion() {
+      if (state.quizIndex > 0) {
+        sfx.click();
+        state.quizIndex--;
+        renderQuizQuestion();
+      }
+    }
+
+    function nextQuizQuestion() {
+      if (state.quizAnswers[state.quizIndex] === null) return;
+      if (state.quizIndex < QUIZ_QUESTIONS.length - 1) {
+        sfx.click();
+        state.quizIndex++;
+        renderQuizQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function finishQuiz() {
+      sfx.ok();
+      state.quizDone = true;
+      state.postPlan = state.quizAnswers[0];
+
+      // Contar rama preferida en preguntas 2 a 5
+      const tally = { hw: 0, net: 0, web: 0, sec: 0 };
+      for (let i = 1; i < state.quizAnswers.length; i++) {
+        const val = state.quizAnswers[i];
+        if (tally[val] !== undefined) tally[val]++;
+      }
+      state.preferredBranch = Object.keys(tally).reduce((a, b) => tally[a] >= tally[b] ? a : b);
+
+      const planLabels = {
+        gs: 'continuar con un Grado Superior',
+        work: 'incorporarte pronto al mercado laboral',
+        cert: 'especializarte mediante certificaciones técnicas',
+        unsure: 'explorar qué opción encaja mejor contigo'
+      };
+
+      document.getElementById('quiz-active-view').classList.add('hidden');
+      document.getElementById('quiz-summary-view').classList.remove('hidden');
+      document.getElementById('quiz-summary-title').textContent =
+        `Tu intuición apunta hacia: ${BRANCH_META[state.preferredBranch].name}`;
+      document.getElementById('quiz-summary-text').textContent =
+        `Has indicado que tras SMR te gustaría ${planLabels[state.postPlan]}. Ahora toca demostrarlo en la práctica: supera los 4 minijuegos de los tutores para comprobar si tu talento real coincide con tu vocación inicial.`;
+
+      updateProgressLEDs();
+      checkAutoUnlockResults();
+    }
+
+    function restartQuiz() {
+      sfx.click();
+      state.quizDone = false;
+      state.quizIndex = 0;
+      state.quizAnswers = [null, null, null, null, null];
+      document.getElementById('quiz-summary-view').classList.add('hidden');
+      document.getElementById('quiz-active-view').classList.remove('hidden');
+      renderQuizQuestion();
+      updateProgressLEDs();
+    }
+
+    /* =========================================================================
+       4. NAVEGACIÓN ENTRE MINIJUEGOS Y LEDs
+       ========================================================================= */
+    function openGame(num, shouldScroll = true) {
+      sfx.click();
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(`game-${i}`).classList.toggle('active', i === num);
+        document.getElementById(`tab-g${i}`).classList.toggle('active', i === num);
+      }
+      updateProgressLEDs(num);
+      if (shouldScroll) {
+        document.getElementById('minijuegos').scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function updateProgressLEDs(activeGame = null) {
+      const map = [
+        { id: 'led-perfil', done: state.quizDone, active: !state.quizDone && activeGame === null },
+        { id: 'led-hw',  done: state.scores.hw !== null,  active: activeGame === 1 },
+        { id: 'led-net', done: state.scores.net !== null, active: activeGame === 2 },
+        { id: 'led-web', done: state.scores.web !== null, active: activeGame === 3 },
+        { id: 'led-sec', done: state.scores.sec !== null, active: activeGame === 4 },
+        { id: 'led-res', done: allGamesDone(), active: false }
+      ];
+      map.forEach(item => {
+        const el = document.getElementById(item.id);
+        el.classList.toggle('done', item.done);
+        el.classList.toggle('active', item.active);
+      });
+
+      // Actualizar chips en tarjetas de profesores y tabs
+      const keys = [['hw', 1], ['net', 2], ['web', 3], ['sec', 4]];
+      keys.forEach(([k, idx]) => {
+        const score = state.scores[k];
+        const chip = document.getElementById(`chip-${k}`);
+        const tabChip = document.getElementById(`tab-score-${idx}`);
+        const tabBtn = document.getElementById(`tab-g${idx}`);
+        if (score !== null) {
+          chip.textContent = `${score}/100 pts`;
+          chip.classList.add('completed');
+          tabChip.textContent = `${score}/100`;
+          tabChip.classList.add('completed');
+          tabBtn.classList.add('completed');
+        } else {
+          chip.textContent = 'Pendiente';
+          chip.classList.remove('completed');
+          tabChip.textContent = '0/100';
+          tabChip.classList.remove('completed');
+          tabBtn.classList.remove('completed');
+        }
+      });
+    }
+
+    function allGamesDone() {
+      return state.scores.hw !== null && state.scores.net !== null && state.scores.web !== null && state.scores.sec !== null;
+    }
+
+    /* =========================================================================
+       5. MINIJUEGO 1: HARDWARE (PROF. AITOR)
+       ========================================================================= */
+    const HW_BUDGET = 850;
+    const HW_DATA = {
+      cpu: {
+        title: '1. Procesador (CPU)',
+        items: [
+          { id: 'r5', name: 'AMD Ryzen 5 5600', price: 135, socket: 'AM4', watts: 65, perf: 85, spec: 'Socket AM4 · 6 núcleos · 65W' },
+          { id: 'i5', name: 'Intel Core i5-12400F', price: 145, socket: 'LGA1700', watts: 65, perf: 88, spec: 'Socket LGA1700 · 6 núcleos · 65W' },
+          { id: 'i9', name: 'Intel Core i9-14900K', price: 540, socket: 'LGA1700', watts: 253, perf: 100, spec: 'Socket LGA1700 · Alto consumo (253W)' }
+        ]
+      },
+      mobo: {
+        title: '2. Placa Base',
+        items: [
+          { id: 'b550', name: 'MSI B550M PRO-VDH', price: 105, socket: 'AM4', ramType: 'DDR4', spec: 'Socket AM4 · Soporta DDR4' },
+          { id: 'b760d4', name: 'ASUS B760M-K D4', price: 110, socket: 'LGA1700', ramType: 'DDR4', spec: 'Socket LGA1700 · Soporta DDR4' },
+          { id: 'b760d5', name: 'Gigabyte B760M DDR5', price: 155, socket: 'LGA1700', ramType: 'DDR5', spec: 'Socket LGA1700 · Soporta DDR5' }
+        ]
+      },
+      ram: {
+        title: '3. Memoria RAM',
+        items: [
+          { id: 'ddr4_16', name: '16GB (2x8) DDR4 3200', price: 45, ramType: 'DDR4', perf: 85, spec: 'Tipo DDR4 · Dual Channel' },
+          { id: 'ddr5_32', name: '32GB (2x16) DDR5 5600', price: 115, ramType: 'DDR5', perf: 95, spec: 'Tipo DDR5 · Alto rendimiento' },
+          { id: 'ddr4_8', name: '8GB (1x8) DDR4 2400', price: 22, ramType: 'DDR4', perf: 50, spec: 'Tipo DDR4 · Single Channel básico' }
+        ]
+      },
+      gpu: {
+        title: '4. Tarjeta Gráfica (GPU)',
+        items: [
+          { id: 'rx6600', name: 'Radeon RX 6600 8GB', price: 215, watts: 132, perf: 85, spec: '8GB VRAM · Consumo 132W · Calidad/Precio' },
+          { id: 'rtx4060', name: 'GeForce RTX 4060 8GB', price: 305, watts: 115, perf: 95, spec: '8GB VRAM · Consumo 115W · Eficiente' },
+          { id: 'rtx4070s', name: 'GeForce RTX 4070 Super', price: 620, watts: 220, perf: 100, spec: '12GB VRAM · Consumo 220W · Gama Alta' }
+        ]
+      },
+      psu: {
+        title: '5. Fuente de Alimentación (PSU)',
+        items: [
+          { id: 'psu350', name: 'Genérica 350W Sin Cert.', price: 28, watts: 350, cert: false, spec: '350W · Riesgo de inestabilidad' },
+          { id: 'psu650', name: 'MSI MAG 650W 80+ Bronze', price: 62, watts: 650, cert: true, spec: '650W · Certificación 80+ Bronze' },
+          { id: 'psu850', name: 'Corsair 850W 80+ Gold', price: 125, watts: 850, cert: true, spec: '850W · Certificación 80+ Gold' }
+        ]
+      }
+    };
+
+    function renderHardwareCatalog() {
+      const container = document.getElementById('hw-catalog');
+      container.innerHTML = '';
+      Object.entries(HW_DATA).forEach(([catKey, cat]) => {
+        const block = document.createElement('div');
+        block.className = 'hw-category';
+        block.innerHTML = `<div class="hw-category-title">${cat.title}</div>`;
+        const grid = document.createElement('div');
+        grid.className = 'hw-options';
+
+        cat.items.forEach(item => {
+          const btn = document.createElement('button');
+          const isSel = state.hwSelection[catKey] && state.hwSelection[catKey].id === item.id;
+          btn.className = 'hw-item' + (isSel ? ' selected' : '');
+          btn.innerHTML = `
+            <div style="display:flex;justify-content:space-between;gap:0.4rem;align-items:center;">
+              <strong style="font-size:0.87rem;">${item.name}</strong>
+              <span class="price">${item.price}€</span>
+            </div>
+            <span class="spec">${item.spec}</span>
+          `;
+          btn.onclick = () => {
+            sfx.click();
+            state.hwSelection[catKey] = item;
+            renderHardwareCatalog();
+            updateHardwareLiveSummary();
+          };
+          grid.appendChild(btn);
+        });
+
+        block.appendChild(grid);
+        container.appendChild(block);
+      });
+    }
+
+    function updateHardwareLiveSummary() {
+      const sel = state.hwSelection;
+      const total = Object.values(sel).reduce((sum, x) => sum + (x ? x.price : 0), 0);
+      const budgetEl = document.getElementById('hw-budget-display');
+      budgetEl.textContent = `${total} € / ${HW_BUDGET} €`;
+      budgetEl.style.color = total > HW_BUDGET ? 'var(--neon-red)' : 'var(--neon-cyan)';
+
+      const pct = Math.min(100, Math.round((total / HW_BUDGET) * 100));
+      const bar = document.getElementById('hw-budget-bar');
+      bar.style.width = `${pct}%`;
+      bar.style.background = total > HW_BUDGET
+        ? 'linear-gradient(90deg,#f59e0b,#ef4444)'
+        : 'linear-gradient(90deg,var(--neon-cyan),var(--neon-green))';
+
+      const checks = [];
+      if (sel.cpu && sel.mobo) {
+        if (sel.cpu.socket === sel.mobo.socket) {
+          checks.push(`<li class="ok">✔ Socket compatible (${sel.cpu.socket})</li>`);
+        } else {
+          checks.push(`<li class="err">✖ Socket incompatible: CPU ${sel.cpu.socket} vs Placa ${sel.mobo.socket}</li>`);
+        }
+      }
+      if (sel.mobo && sel.ram) {
+        if (sel.mobo.ramType === sel.ram.ramType) {
+          checks.push(`<li class="ok">✔ RAM compatible (${sel.ram.ramType})</li>`);
+        } else {
+          checks.push(`<li class="err">✖ RAM incompatible: Placa ${sel.mobo.ramType} vs RAM ${sel.ram.ramType}</li>`);
+        }
+      }
+      if (sel.cpu && sel.gpu && sel.psu) {
+        const needed = sel.cpu.watts + sel.gpu.watts + 150;
+        if (sel.psu.watts >= needed && sel.psu.cert) {
+          checks.push(`<li class="ok">✔ Fuente sobrada y certificada (${sel.psu.watts}W ≥ ${needed}W est.)</li>`);
+        } else if (sel.psu.watts < needed) {
+          checks.push(`<li class="err">✖ Potencia insuficiente: necesitas mínimo ~${needed}W</li>`);
+        } else {
+          checks.push(`<li class="warn">⚠ Fuente sin certificación 80+: poco recomendable</li>`);
+        }
+      }
+      if (total > HW_BUDGET) {
+        checks.push(`<li class="err">✖ Te pasas del presupuesto por ${total - HW_BUDGET} €</li>`);
+      } else if (total > 0) {
+        checks.push(`<li class="ok">✔ Dentro del presupuesto (${HW_BUDGET - total} € libres)</li>`);
+      }
+
+      document.getElementById('hw-checks').innerHTML = checks.length
+        ? checks.join('')
+        : '<li class="warn">⏳ Selecciona los 5 componentes para validar...</li>';
+    }
+
+    function evaluateHardware() {
+      const sel = state.hwSelection;
+      const fb = document.getElementById('hw-feedback');
+      if (!sel.cpu || !sel.mobo || !sel.ram || !sel.gpu || !sel.psu) {
+        sfx.err();
+        fb.innerHTML = `<div class="feedback-box warning">⚠ Prof. Aitor: Te falta elegir alguno de los 5 componentes antes de encender el PC.</div>`;
+        return;
+      }
+
+      const total = sel.cpu.price + sel.mobo.price + sel.ram.price + sel.gpu.price + sel.psu.price;
+      let score = 0;
+      const notes = [];
+
+      // 1. Socket (25 pts)
+      if (sel.cpu.socket === sel.mobo.socket) { score += 25; } else { notes.push('El socket de la CPU no encaja en la placa base.'); }
+      // 2. RAM (25 pts)
+      if (sel.mobo.ramType === sel.ram.ramType) { score += 25; } else { notes.push('El módulo de RAM no coincide con el estándar de la placa.'); }
+      // 3. Presupuesto (25 pts)
+      if (total <= HW_BUDGET) { score += 25; } else { notes.push(`Has superado el presupuesto de ${HW_BUDGET} € (total: ${total} €).`); }
+      // 4. Fuente y balance (25 pts)
+      const needed = sel.cpu.watts + sel.gpu.watts + 150;
+      if (sel.psu.watts >= needed && sel.psu.cert) {
+        score += (sel.ram.perf >= 80 ? 25 : 18);
+        if (sel.ram.perf < 80) notes.push('8GB en Single Channel se queda corto para virtualización en SMR.');
+      } else {
+        score += 5;
+        notes.push('La fuente es justa o sin certificación 80+: peligro para el equipo.');
+      }
+
+      state.scores.hw = score;
+      updateProgressLEDs(1);
+      checkAutoUnlockResults();
+
+      if (score >= 85) {
+        sfx.ok();
+        fb.innerHTML = `
+          <div class="feedback-box success">
+            <strong>✔ ¡Montaje validado! (${score}/100 pts)</strong><br>
+            Prof. Aitor: ¡Brutal! Equipo totalmente compatible, equilibrado y por ${total} €. Listo para arrancar sin humo.
+            <div style="margin-top:0.8rem;"><button class="btn btn-purple" onclick="openGame(2)">Siguiente → Reto 2: Redes</button></div>
+          </div>`;
+      } else {
+        sfx.err();
+        fb.innerHTML = `
+          <div class="feedback-box warning">
+            <strong>⚠ Montaje con fallos (${score}/100 pts)</strong><br>
+            Prof. Aitor: Revisa esto: ${notes.join(' ')} Puedes reajustarlo o pasar al siguiente reto.
+            <div style="margin-top:0.8rem;"><button class="btn btn-purple" onclick="openGame(2)">Ir al Reto 2: Redes →</button></div>
+          </div>`;
+      }
+    }
+
+    /* =========================================================================
+       6. MINIJUEGO 2: REDES LOCALES (PROF. ALFREDO)
+       ========================================================================= */
+    function evaluateNetworking() {
+      const mask = document.getElementById('net-mask').value;
+      const bcast = document.getElementById('net-broadcast').value;
+      const ip = document.getElementById('net-ip').value;
+      const gw = document.getElementById('net-gw').value;
+      const pHttp = document.getElementById('port-http').value;
+      const pHttps = document.getElementById('port-https').value;
+      const pSsh = document.getElementById('port-ssh').value;
+      const pDns = document.getElementById('port-dns').value;
+
+      const fb = document.getElementById('net-feedback');
+      if (!mask || !bcast || !ip || !gw || !pHttp || !pHttps || !pSsh || !pDns) {
+        sfx.err();
+        fb.innerHTML = `<div class="feedback-box warning">⚠ Prof. Alfredo: Rellena todos los campos de las 3 fases de red antes de lanzar el ping.</div>`;
+        return;
+      }
+
+      let score = 0;
+      const mistakes = [];
+
+      if (mask === '255.255.255.0') score += 18; else mistakes.push('Una red /24 usa máscara 255.255.255.0.');
+      if (bcast === '192.168.10.255') score += 17; else mistakes.push('El broadcast de 192.168.10.0/24 es .255.');
+      if (ip === '192.168.10.10') score += 18; else mistakes.push('La IP estática debe pertenecer a la red 192.168.10.x (ej. .10) y no ser .0.');
+      if (gw === '192.168.10.1') score += 17; else mistakes.push('La puerta de enlace es la IP del router: 192.168.10.1.');
+
+      let portHits = 0;
+      if (pHttp === '80') portHits++;
+      if (pHttps === '443') portHits++;
+      if (pSsh === '22') portHits++;
+      if (pDns === '53') portHits++;
+      score += Math.round((portHits / 4) * 30);
+      if (portHits < 4) mistakes.push(`Puertos correctos: HTTP=80, HTTPS=443, SSH=22, DNS=53 (acertaste ${portHits}/4).`);
+
+      state.scores.net = score;
+      updateProgressLEDs(2);
+      checkAutoUnlockResults();
+
+      if (score >= 80) {
+        sfx.ok();
+        fb.innerHTML = `
+          <div class="feedback-box success">
+            <strong>✔ ¡PING 192.168.10.10: 0% packet loss! (${score}/100 pts)</strong><br>
+            Prof. Alfredo: Conectividad impecable. ${mistakes.length ? mistakes.join(' ') : 'Dominas el direccionamiento IP y los puertos clave de SMR.'}
+            <div style="margin-top:0.8rem;"><button class="btn btn-success" onclick="openGame(3)">Siguiente → Reto 3: Web y BD</button></div>
+          </div>`;
+      } else {
+        sfx.err();
+        fb.innerHTML = `
+          <div class="feedback-box error">
+            <strong>✖ Fallo de conectividad (${score}/100 pts)</strong><br>
+            Prof. Alfredo: ${mistakes.join(' ')} Puedes corregirlo o continuar.
+            <div style="margin-top:0.8rem;"><button class="btn btn-success" onclick="openGame(3)">Ir al Reto 3: Web y BD →</button></div>
+          </div>`;
+      }
+    }
+
+    /* =========================================================================
+       7. MINIJUEGO 3: WEB Y BASES DE DATOS (PROF. MARIO)
+       ========================================================================= */
+    function updateFlexPreview() {
+      sfx.click();
+      const box = document.getElementById('flex-preview-box');
+      box.style.justifyContent = document.getElementById('css-justify').value;
+      box.style.alignItems = document.getElementById('css-align').value;
+    }
+
+    function evaluateWebDB() {
+      const sqlFix = document.getElementById('web-sql-fix').value;
+      const dbPk = document.getElementById('db-pk').value;
+      const dbType = document.getElementById('db-score-type').value;
+      const cssJ = document.getElementById('css-justify').value;
+      const cssA = document.getElementById('css-align').value;
+      const fb = document.getElementById('web-feedback');
+
+      if (!sqlFix || !dbPk || !dbType) {
+        sfx.err();
+        fb.innerHTML = `<div class="feedback-box warning">⚠ Prof. Mario: Completa las opciones de SQL y Base de Datos antes de compilar.</div>`;
+        return;
+      }
+
+      let score = 0;
+      const notes = [];
+
+      if (sqlFix === 'from') score += 35; else notes.push('El error SQL estaba en FORM (debe ser FROM).');
+      if (dbPk === 'pk_ok') score += 20; else notes.push('La clave primaria autoincremental debe ser INT AUTO_INCREMENT PRIMARY KEY.');
+      if (dbType === 'int') score += 15; else notes.push('Las puntuaciones numéricas (0-100) se almacenan como INT / TINYINT.');
+      if (cssJ === 'center' && cssA === 'center') {
+        score += 30;
+      } else if (cssJ === 'center' || cssA === 'center') {
+        score += 15;
+        notes.push('En Flexbox necesitas center en justify-content y en align-items para centrar del todo.');
+      } else {
+        notes.push('El bloque CORE no está centrado: prueba justify-content: center y align-items: center.');
+      }
+
+      state.scores.web = score;
+      updateProgressLEDs(3);
+      checkAutoUnlockResults();
+
+      if (score >= 80) {
+        sfx.ok();
+        fb.innerHTML = `
+          <div class="feedback-box success">
+            <strong>✔ ¡Build exitoso sin errores! (${score}/100 pts)</strong><br>
+            Prof. Mario: ${notes.length ? notes.join(' ') : 'Código limpio, base de datos bien estructurada y CSS centrado al píxel.'}
+            <div style="margin-top:0.8rem;"><button class="btn btn-purple" onclick="openGame(4)">Siguiente → Reto 4: Seguridad</button></div>
+          </div>`;
+      } else {
+        sfx.err();
+        fb.innerHTML = `
+          <div class="feedback-box warning">
+            <strong>⚠ Compilación con advertencias (${score}/100 pts)</strong><br>
+            Prof. Mario: ${notes.join(' ')}
+            <div style="margin-top:0.8rem;"><button class="btn btn-purple" onclick="openGame(4)">Ir al Reto 4: Seguridad →</button></div>
+          </div>`;
+      }
+    }
+
+    /* =========================================================================
+       8. MINIJUEGO 4: SEGURIDAD INFORMÁTICA / SIEM (PROF. MIGUEL)
+       ========================================================================= */
+    const SIEM_CASES = [
+      {
+        type: 'CORREO ENTRANTE',
+        from: 'soporte-urgente@banc0-seguro-verificacion.net',
+        subject: '⚠️ CUENTA BLOQUEADA: Verifica tu contraseña en menos de 2 horas',
+        body: 'Estimado cliente, hemos detectado un acceso sospechoso. Descargue el documento adjunto y confirme sus claves inmediatamente o cerraremos su cuenta.',
+        inspect: 'Adjunto: factura_verificacion.pdf.exe  |  URL: http://banc0-seguro.ru/login',
+        isThreat: true,
+        explain: 'Phishing de manual: dominio falso con un cero ("banc0"), sentido de urgencia, HTTP sin cifrar y doble extensión maliciosa (.pdf.exe).'
+      },
+      {
+        type: 'AVISO INTERNO DEL INSTITUTO',
+        from: 'secretaria@iesjuanbosco.es',
+        subject: 'Calendario oficial de entregas de la 2ª Evaluación SMR',
+        body: 'Buenos días alumnado de 2º SMR, ya tenéis disponible en el aula virtual oficial el calendario de defensas del Proyecto Intermodular. No es necesario responder a este correo.',
+        inspect: 'SPF/DKIM: PASS  |  URL: https://educamosclm.castillalamancha.es/',
+        isThreat: false,
+        explain: 'Correo legítimo: dominio oficial verificado con SPF/DKIM correcto, enlace HTTPS oficial y no pide contraseñas ni adjuntos ejecutables.'
+      },
+      {
+        type: 'ALERTA DE LOG SSH (SERVIDOR)',
+        from: 'sshd[4821] · 192.168.10.10',
+        subject: '412 intentos fallidos de login como "root" en 45 segundos',
+        body: 'Origen externo detectado: IP 185.220.101.44 probando diccionario de contraseñas sobre el puerto 22/TCP.',
+        inspect: 'Acción recomendada: Bloquear IP con Fail2Ban / UFW y desactivar login root con contraseña.',
+        isThreat: true,
+        explain: 'Ataque activo de fuerza bruta contra SSH. Hay que bloquear la IP con Fail2Ban/UFW y exigir autenticación por clave pública.'
+      },
+      {
+        type: 'CORREO DE SERVICIO CLOUD',
+        from: 'no-reply@microsoft-account-gifts-free.xyz',
+        subject: '¡Enhorabuena! Has ganado una licencia gratuita de Windows Server',
+        body: 'Haz clic en el enlace e introduce tus credenciales del dominio Active Directory del centro para activar tu regalo ahora mismo.',
+        inspect: 'URL real: http://bit.ly/3xFakeLoginAD  |  Dominio: .xyz sin verificar',
+        isThreat: true,
+        explain: 'Ingeniería social / robo de credenciales: dominio sospechoso .xyz, acortador oculto y petición de credenciales de Active Directory.'
+      }
+    ];
+
+    function renderSiemCase() {
+      const body = document.getElementById('siem-body');
+      const label = document.getElementById('siem-case-label');
+      const live = document.getElementById('siem-score-live');
+
+      live.textContent = `Puntuación parcial: ${state.siemScore} / 100`;
+
+      if (state.siemIndex >= SIEM_CASES.length) {
+        label.textContent = 'ANÁLISIS COMPLETADO · 4 / 4 INCIDENTES RESUELTOS';
+        body.innerHTML = `
+          <div style="text-align:center;padding:1rem 0;">
+            <h3 style="color:var(--neon-green);margin-bottom:0.5rem;">🛡️ Auditoría SIEM finalizada: ${state.siemScore} / 100 pts</h3>
+            <p style="color:var(--text-muted);margin-bottom:1.25rem;">Prof. Miguel ha registrado tu capacidad de reacción ante phishing y ataques en servidor.</p>
+            <div style="display:flex;justify-content:center;gap:0.85rem;flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="goToFinalReport()">📊 Ver mi Informe Final Completo</button>
+              <button class="btn btn-outline" onclick="restartSiem()">↺ Repetir Consola SIEM</button>
+            </div>
+          </div>`;
+        return;
+      }
+
+      const c = SIEM_CASES[state.siemIndex];
+      label.textContent = `INCIDENTE ${state.siemIndex + 1} / ${SIEM_CASES.length} · ${c.type}`;
+      body.innerHTML = `
+        <div class="mail-meta">
+          <div><strong style="color:var(--neon-pink);">DE:</strong> ${c.from}</div>
+          <div><strong style="color:var(--neon-cyan);">ASUNTO:</strong> ${c.subject}</div>
+        </div>
+        <div class="mail-content">
+          <p>${c.body}</p>
+          <div class="inspect-pill">🔍 INSPECTOR TÉCNICO: ${c.inspect}</div>
+        </div>
+        <div style="display:flex;gap:0.85rem;flex-wrap:wrap;">
+          <button class="btn btn-danger" id="btn-threat" onclick="answerSiem(true)">🚨 Es Phishing / Amenaza</button>
+          <button class="btn btn-success" id="btn-legit" onclick="answerSiem(false)">✅ Es Legítimo / Seguro</button>
+        </div>
+      `;
+    }
+
+    function answerSiem(userSaysThreat) {
+      if (state.siemAnswered) return;
+      state.siemAnswered = true;
+      const c = SIEM_CASES[state.siemIndex];
+      const correct = (userSaysThreat === c.isThreat);
+      const fb = document.getElementById('sec-feedback');
+
+      if (correct) {
+        state.siemScore += 25;
+        sfx.ok();
+        fb.innerHTML = `
+          <div class="feedback-box success">
+            <strong>✔ ¡Acierto! (+25 pts)</strong> — Prof. Miguel: ${c.explain}
+            <div style="margin-top:0.75rem;"><button class="btn btn-primary" onclick="nextSiemCase()">Siguiente incidente →</button></div>
+          </div>`;
+      } else {
+        sfx.err();
+        fb.innerHTML = `
+          <div class="feedback-box error">
+            <strong>✖ Alerta mal clasificada (+0 pts)</strong> — Prof. Miguel: ${c.explain}
+            <div style="margin-top:0.75rem;"><button class="btn btn-outline" onclick="nextSiemCase()">Siguiente incidente →</button></div>
+          </div>`;
+      }
+
+      document.getElementById('btn-threat').disabled = true;
+      document.getElementById('btn-legit').disabled = true;
+      document.getElementById('siem-score-live').textContent = `Puntuación parcial: ${state.siemScore} / 100`;
+    }
+
+    function nextSiemCase() {
+      sfx.click();
+      state.siemIndex++;
+      state.siemAnswered = false;
+      document.getElementById('sec-feedback').innerHTML = '';
+
+      if (state.siemIndex >= SIEM_CASES.length) {
+        state.scores.sec = state.siemScore;
+        updateProgressLEDs(4);
+        checkAutoUnlockResults();
+        sfx.win();
+      }
+      renderSiemCase();
+    }
+
+    function restartSiem() {
+      sfx.click();
+      state.siemIndex = 0;
+      state.siemScore = 0;
+      state.siemAnswered = false;
+      state.scores.sec = null;
+      document.getElementById('sec-feedback').innerHTML = '';
+      updateProgressLEDs(4);
+      renderSiemCase();
+    }
+
+    /* =========================================================================
+       9. MOTOR DE INFORME FINAL, RADAR SVG Y RECOMENDACIÓN POST-SMR
+       ========================================================================= */
+    function checkAutoUnlockResults() {
+      const doneCount = Object.values(state.scores).filter(v => v !== null).length;
+      const hint = document.getElementById('results-progress-hint');
+      if (allGamesDone() && state.quizDone) {
+        renderResults(false);
+      } else {
+        hint.textContent = `Llevas ${state.quizDone ? 'la evaluación inicial y ' : ''}${doneCount} de 4 minijuegos completados.`;
+      }
+    }
+
+    function continuePendingStep() {
+      if (!state.quizDone) { goToSection('evaluacion'); return; }
+      if (state.scores.hw === null) { openGame(1); return; }
+      if (state.scores.net === null) { openGame(2); return; }
+      if (state.scores.web === null) { openGame(3); return; }
+      if (state.scores.sec === null) { openGame(4); return; }
+      renderResults(false);
+    }
+
+    function goToFinalReport() {
+      renderResults(true);
+      goToSection('resultados');
+    }
+
+    function renderResults(forceShow = false) {
+      if (!forceShow && !allGamesDone()) return;
+
+      document.getElementById('results-locked-msg').classList.add('hidden');
+      document.getElementById('results-content').classList.remove('hidden');
+
+      const s = {
+        hw:  state.scores.hw  ?? 0,
+        net: state.scores.net ?? 0,
+        web: state.scores.web ?? 0,
+        sec: state.scores.sec ?? 0
+      };
+      const total = s.hw + s.net + s.web + s.sec;
+
+      // Ordenar ramas de mayor a menor puntuación
+      const sorted = Object.entries(s).sort((a, b) => b[1] - a[1]);
+      const topBranch = sorted[0][0];
+      const secondBranch = sorted[1][0];
+      const topScore = sorted[0][1];
+
+      // Comparativa vocación inicial vs mejor nota real
+      const badgeWrap = document.getElementById('verdict-badge-wrap');
+      if (state.quizDone) {
+        if (state.preferredBranch === topBranch) {
+          badgeWrap.innerHTML = `<span class="verdict-badge match">✨ ¡Vocación Confirmada! Tu gusto coincide con tu mejor nota</span>`;
+        } else {
+          badgeWrap.innerHTML = `<span class="verdict-badge hidden-talent">🔎 ¡Talento Oculto Detectado! Empezaste por ${BRANCH_META[state.preferredBranch].name}, pero brillas en ${BRANCH_META[topBranch].name}</span>`;
+        }
+      } else {
+        badgeWrap.innerHTML = `<span class="verdict-badge match">⚡ Diagnóstico Técnico Directo</span>`;
+      }
+
+      document.getElementById('result-headline').textContent =
+        `Tu perfil destaca en ${BRANCH_META[topBranch].name} (${topScore}%)`;
+      document.getElementById('result-narrative').textContent =
+        `Has sumado ${total} de 400 puntos totales. Tu punto más fuerte es ${BRANCH_META[topBranch].name}, seguido de ${BRANCH_META[secondBranch].name} (${s[secondBranch]}%). Esta combinación encaja de lleno con perfiles técnicos muy demandados tras terminar SMR.`;
+
+      // Barras animadas
+      const barsWrap = document.getElementById('bars-container');
+      barsWrap.innerHTML = '';
+      ['hw', 'net', 'web', 'sec'].forEach(key => {
+        const meta = BRANCH_META[key];
+        const val = s[key];
+        barsWrap.innerHTML += `
+          <div class="bar-row">
+            <div class="bar-label">
+              <span><strong>${meta.name}</strong> (${meta.teacher})</span>
+              <span style="font-family:var(--font-mono);color:${meta.color};">${val}%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${val}%;background:${meta.color};"></div>
+            </div>
+          </div>`;
+      });
+
+      // Gráfico Radar SVG
+      drawRadarChart(s);
+      document.getElementById('total-score-label').textContent = `Puntuación Global: ${total} / 400 pts`;
+
+      // Motor de Recomendación Post-SMR (cruzando postPlan + rama ganadora)
+      const rec = buildRecommendation(topBranch, secondBranch, state.postPlan);
+      document.getElementById('rec-title').textContent = rec.title;
+      document.getElementById('rec-desc').textContent = rec.desc;
+      document.getElementById('rec-pathways').innerHTML = rec.cards.map(c => `
+        <div class="pathway-card">
+          <h4>${c.title}</h4>
+          <p style="font-size:0.86rem;color:var(--text-muted);">${c.body}</p>
+        </div>`).join('');
+
+      // Generar salida SQL + JSON
+      generateDbOutput(s, total, topBranch, rec.shortCode);
+    }
+
+    function buildRecommendation(top, second, plan) {
+      const profiles = {
+        hw: {
+          gs: 'ASIR (Administración de Sistemas Informáticos en Red)',
+          shortCode: 'ASIR',
+          job: 'Técnico de Soporte Microinformático / Sistemas Junior / Montador de Servidores',
+          certs: 'CompTIA A+, CompTIA Server+ y Certificación Linux Essentials (LPIC-1)'
+        },
+        net: {
+          gs: 'ASIR (Administración de Sistemas Informáticos en Red)',
+          shortCode: 'ASIR',
+          job: 'Técnico de Redes LAN/WAN, Operador NOC Junior y Administrador de Sistemas',
+          certs: 'Cisco CCNA, MikroTik MTCNA y CompTIA Network+'
+        },
+        web: {
+          gs: 'DAW (Desarrollo de Aplicaciones Web) o DAM (Multiplataforma)',
+          shortCode: 'DAW/DAM',
+          job: 'Desarrollador Web Junior (Frontend/Backend) o Técnico de Bases de Datos SQL',
+          certs: 'Certificaciones de JavaScript/SQL, AWS Cloud Practitioner o Git/GitHub'
+        },
+        sec: {
+          gs: 'ASIR + Curso de Especialización (Máster FP) en Ciberseguridad',
+          shortCode: 'ASIR+CIBER',
+          job: 'Analista SOC Nivel 1, Técnico de Seguridad Perimetral y Auditor Junior',
+          certs: 'CompTIA Security+, eJPT (Junior Penetration Tester) y Cisco CyberOps'
+        }
+      };
+
+      const p = profiles[top];
+      let title = '';
+      let desc = '';
+
+      if (plan === 'gs') {
+        title = `Grado Superior Recomendado: ${p.gs}`;
+        desc = `Como quieres seguir estudiando tras SMR y tu mejor rendimiento está en ${BRANCH_META[top].name} (apoyado por ${BRANCH_META[second].name}), este Grado Superior multiplicará tu proyección y salario.`;
+      } else if (plan === 'work') {
+        title = `Salida Laboral Directa Recomendada: ${p.job}`;
+        desc = `Como prefieres empezar a trabajar nada más acabar las FCT de SMR, enfoca tu currículum hacia puestos de ${BRANCH_META[top].name}. Más adelante siempre podrás cursar ${p.gs} en modalidad online o vespertina.`;
+      } else if (plan === 'cert') {
+        title = `Ruta de Certificaciones Recomendada: ${p.certs}`;
+        desc = `Ya que prefieres especialización práctica rápida, estas certificaciones oficiales validan tu nivel en ${BRANCH_META[top].name} ante empresas tecnológicas sin esperar 2 años.`;
+      } else {
+        title = `Camino Ideal Sugerido: ${p.gs}`;
+        desc = `Como aún estás decidiendo, te recomendamos dar el salto a ${p.gs} porque encaja con tu talento real en ${BRANCH_META[top].name}, aunque también podrías entrar al mercado como ${p.job}.`;
+      }
+
+      return {
+        title,
+        desc,
+        shortCode: p.shortCode,
+        cards: [
+          { title: '🎓 Grado Superior Ideal', body: p.gs },
+          { title: '💼 Puesto de Entrada tras SMR', body: p.job },
+          { title: '🏅 Certificaciones Clave', body: p.certs }
+        ]
+      };
+    }
+
+    function drawRadarChart(s) {
+      const svg = document.getElementById('radar-svg');
+      const cx = 145, cy = 135, maxR = 88;
+      // 4 ejes: Top (HW), Right (NET), Bottom (WEB), Left (SEC)
+      const pt = (val, axis) => {
+        const r = (val / 100) * maxR;
+        if (axis === 0) return [cx, cy - r];
+        if (axis === 1) return [cx + r, cy];
+        if (axis === 2) return [cx, cy + r];
+        return [cx - r, cy];
+      };
+
+      const levels = [25, 50, 75, 100];
+      let html = '';
+      levels.forEach(lvl => {
+        const pts = [0,1,2,3].map(a => pt(lvl, a).join(',')).join(' ');
+        html += `<polygon points="${pts}" fill="none" stroke="rgba(148,163,184,0.22)" stroke-width="1"/>`;
+      });
+
+      // Ejes
+      html += `<line x1="${cx}" y1="${cy - maxR}" x2="${cx}" y2="${cy + maxR}" stroke="rgba(148,163,184,0.25)"/>`;
+      html += `<line x1="${cx - maxR}" y1="${cy}" x2="${cx + maxR}" y2="${cy}" stroke="rgba(148,163,184,0.25)"/>`;
+
+      // Polígono del usuario
+      const userPts = [
+        pt(Math.max(8, s.hw), 0),
+        pt(Math.max(8, s.net), 1),
+        pt(Math.max(8, s.web), 2),
+        pt(Math.max(8, s.sec), 3)
+      ];
+      const polyStr = userPts.map(p => p.join(',')).join(' ');
+      html += `<polygon points="${polyStr}" fill="rgba(0,240,255,0.22)" stroke="#00f0ff" stroke-width="2.5"/>`;
+
+      userPts.forEach(([x, y]) => {
+        html += `<circle cx="${x}" cy="${y}" r="4.5" fill="#00f0ff" stroke="#070b14" stroke-width="1.5"/>`;
+      });
+
+      // Etiquetas
+      html += `<text x="${cx}" y="26" text-anchor="middle" fill="#00f0ff" font-size="11" font-family="monospace" font-weight="bold">HW (${s.hw})</text>`;
+      html += `<text x="${cx + maxR + 8}" y="${cy + 4}" text-anchor="start" fill="#a855f7" font-size="11" font-family="monospace" font-weight="bold">RED (${s.net})</text>`;
+      html += `<text x="${cx}" y="${cy + maxR + 20}" text-anchor="middle" fill="#10b981" font-size="11" font-family="monospace" font-weight="bold">WEB/BD (${s.web})</text>`;
+      html += `<text x="${cx - maxR - 8}" y="${cy + 4}" text-anchor="end" fill="#ec4899" font-size="11" font-family="monospace" font-weight="bold">SEG (${s.sec})</text>`;
+
+      svg.innerHTML = html;
+    }
+
+    function generateDbOutput(s, total, topBranch, recCode) {
+      const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      const sql = `-- Inserción en MariaDB/MySQL (SMR Tech Finder)
+INSERT INTO resultados_test
+  (plan_post_smr, vocacion_inicial, pts_hardware, pts_redes, pts_web_bd, pts_seguridad, pts_total, rama_destacada, recomendacion_gs, fecha_registro)
+VALUES
+  ('${state.postPlan}', '${state.preferredBranch}', ${s.hw}, ${s.net}, ${s.web}, ${s.sec}, ${total}, '${topBranch}', '${recCode}', '${now}');`;
+
+      const jsonObj = {
+        proyecto: 'SMR Tech Finder',
+        fecha: now,
+        evaluacion_inicial: { plan_post_smr: state.postPlan, vocacion: state.preferredBranch },
+        puntuaciones: { hardware: s.hw, redes: s.net, web_bd: s.web, seguridad: s.sec, total },
+        diagnostico: { rama_top: topBranch, recomendacion: recCode }
+      };
+
+      document.getElementById('db-output-pre').textContent = `${sql}\n\n/* Payload JSON API */\n${JSON.stringify(jsonObj, null, 2)}`;
+    }
+
+    function copyDbOutput() {
+      const text = document.getElementById('db-output-pre').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        sfx.ok();
+        alert('✔ SQL y JSON copiados al portapapeles.');
+      }).catch(() => {
+        alert('No se pudo copiar automáticamente; selecciona el texto manualmente.');
+      });
+    }
+
+    function resetAll() {
+      sfx.click();
+      state.scores = { hw: null, net: null, web: null, sec: null };
+      state.hwSelection = { cpu: null, mobo: null, ram: null, gpu: null, psu: null };
+      document.getElementById('hw-feedback').innerHTML = '';
+      document.getElementById('net-feedback').innerHTML = '';
+      document.getElementById('web-feedback').innerHTML = '';
+      document.getElementById('sec-feedback').innerHTML = '';
+      document.getElementById('results-content').classList.add('hidden');
+      document.getElementById('results-locked-msg').classList.remove('hidden');
+
+      renderHardwareCatalog();
+      updateHardwareLiveSummary();
+      restartSiem();
+      restartQuiz();
+      goToSection('inicio');
+    }
+
+    /* =========================================================================
+       10. PESTAÑAS DE PROYECTO Y ACORDEONES
+       ========================================================================= */
+    function switchProjectTab(tab) {
+      sfx.click();
+      const isPhases = tab === 'phases';
+      document.getElementById('project-phases').classList.toggle('hidden', !isPhases);
+      document.getElementById('project-infra').classList.toggle('hidden', isPhases);
+      document.getElementById('btn-tab-phases').classList.toggle('active', isPhases);
+      document.getElementById('btn-tab-infra').classList.toggle('active', !isPhases);
+    }
+
+    function toggleAccordion(btn) {
+      sfx.click();
+      btn.parentElement.classList.toggle('open');
+    }
+
+    /* =========================================================================
+       11. INICIALIZACIÓN AL CARGAR LA PÁGINA
+       ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      renderQuizQuestion();
+      renderHardwareCatalog();
+      updateHardwareLiveSummary();
+      renderSiemCase();
+      updateProgressLEDs();
+    });
+  </script>
+</body>
+</html>
